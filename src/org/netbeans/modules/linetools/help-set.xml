@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : help-set.xml
+    Created on : January 9, 2006, 1:12 PM
+    Author     : sc32560
+    Description:
+        Purpose of the document follows.
+-->
+
+<!DOCTYPE helpsetref PUBLIC
+          "-//NetBeans//DTD JavaHelp Help Set Reference 1.0//EN"
+          "http://www.netbeans.org/dtds/helpsetref-1_0.dtd">
+<helpsetref url="nbdocs:/org/netbeans/modules/linetools/docs/help-set.hs"/>
+
