@@ -19,4 +19,4 @@ Original sourcecode can be found at http://hg.netbeans.org/main/contrib/file/tip
 
 License remains CDDL - http://www.netbeans.org/cddl-gplv2.html
 
-Compatible to NetBeans 6.9.1 and higher
+Compatible to NetBeans 7.0 and higher
