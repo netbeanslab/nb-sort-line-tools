@@ -1,7 +1,7 @@
 nb-sort-line-tools
 ==================
 
-Adds a toolbar with texteditor operations for sorting
+NetBeans plugin which adds a toolbar with texteditor operations for sorting 
 
 Support following operations in text editors:
 
@@ -17,3 +17,5 @@ All obsolete features except sorting are disabled. No bugs were fixed or feature
 Original sourcecode can be found at http://hg.netbeans.org/main/contrib/file/tip/linetools
 
 License remains CDDL - http://www.netbeans.org/cddl-gplv2.html
+
+Compatible to NetBeans 6.9.1 and higher
