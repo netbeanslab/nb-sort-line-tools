@@ -8,6 +8,7 @@ Support following operations in text editors:
 1. Sort lines spanned by selection in ascending/descending (in-)case-sensitive order
 2. Remove duplicate lines while sorting.
 
+You can also assign shortcuts to these actions.
 
 Further information:
 This plugin is based on the _"Line Tools"_ plugin from _sandipchitale_ @ 
