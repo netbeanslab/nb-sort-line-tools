@@ -3,6 +3,8 @@ nb-sort-line-tools
 
 NetBeans plugin which adds a toolbar with texteditor operations for sorting 
 
+https://github.com/markiewb/nb-sort-line-tools/blob/master/src/screenshot.png
+
 Support following operations in text editors:
 
 1. Sort lines spanned by selection in ascending/descending (in-)case-sensitive order
