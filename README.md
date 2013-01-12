@@ -3,7 +3,7 @@ nb-sort-line-tools
 
 NetBeans plugin which adds a toolbar with texteditor operations for sorting 
 
-![Screenshot](https://github.com/markiewb/nb-sort-line-tools/blob/master/src/screenshot.png)
+![Screenshot](https://raw.github.com/markiewb/nb-sort-line-tools/master/src/screenshot.png)
 
 Support following operations in text editors:
 
