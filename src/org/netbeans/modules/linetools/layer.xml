@@ -6,17 +6,13 @@
 <!--            <file name="org-netbeans-modules-linetools-actions-ExchangeDotAndMark.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.ExchangeDotAndMark"/>
             </file>           -->
-            <file name="org-netbeans-modules-linetools-actions-SortLinesAscending.instance">
-                <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.SortLinesAscending"/>
-            </file>
-            <file name="org-netbeans-modules-linetools-actions-SortLinesDescending.instance">
-                <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.SortLinesDescending"/>
-            </file>
             <file name="org-netbeans-modules-linetools-actions-MatchCase.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.MatchCase"/>
+                <attr intvalue="0" name="position"/>
             </file>
             <file name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.RemoveDuplicateLines"/>
+                <attr intvalue="10" name="position"/>
             </file>
 <!--            <file name="org-netbeans-modules-linetools-actions-Filter.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.Filter"/>
@@ -31,26 +27,20 @@
     </folder>
     <folder name="Menu">
         <folder name="Edit">
-            <attr name="org-netbeans-modules-editor-MainMenuAction$StopMacroRecordingAction.instance/Line" boolvalue="true"/>
+            <!--<attr name="org-netbeans-modules-editor-MainMenuAction$StopMacroRecordingAction.instance/Line" boolvalue="true"/>-->
             <folder name="Line">
+                <attr intvalue="5000000" name="position"/>
 <!--                <file name="org-netbeans-modules-linetools-actions-ExchangeDotAndMark.shadow">
                     <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-ExchangeDotAndMark.instance"/>
                 </file>               
-                <attr name="org-netbeans-modules-linetools-actions-ExchangeDotAndMark.shadow/org-netbeans-modules-linetools-actions-SortLinesAscending.shadow" boolvalue="true"/>-->
-                <file name="org-netbeans-modules-linetools-actions-SortLinesAscending.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-SortLinesAscending.instance"/>
-                </file>
-                <attr name="org-netbeans-modules-linetools-actions-SortLinesAscending.shadow/org-netbeans-modules-linetools-actions-SortLinesDescending.shadow" boolvalue="true"/>
-                <file name="org-netbeans-modules-linetools-actions-SortLinesDescending.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-SortLinesDescending.instance"/>
-                </file>
-                <attr name="org-netbeans-modules-linetools-actions-SortLinesDescending.shadow/org-netbeans-modules-linetools-actions-MatchCase.shadow" boolvalue="true"/>
+                -->
                 <file name="org-netbeans-modules-linetools-actions-MatchCase.shadow">
                     <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-MatchCase.instance"/>
+                    <attr intvalue="0" name="position"/>
                 </file>
-                <attr name="org-netbeans-modules-linetools-actions-MatchCase.shadow/org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow" boolvalue="true"/>
                 <file name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow">
                     <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-RemoveDuplicateLines.instance"/>
+                    <attr intvalue="10" name="position"/>
                 </file>
 <!--
 		<file name="org-netbeans-modules-linetools-actions-Filter.shadow">
@@ -72,23 +62,17 @@
     </folder>
     <folder name="Toolbars">
         <folder name="Line">
-            <file name="org-netbeans-modules-linetools-actions-SortLinesAscending.shadow">
-                <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-SortLinesAscending.instance"/>
-            </file>            
-            <attr name="org-netbeans-modules-linetools-actions-SortLinesAscending.shadow/org-netbeans-modules-linetools-actions-SortLinesDescending.shadow" boolvalue="true"/>
-            <file name="org-netbeans-modules-linetools-actions-SortLinesDescending.shadow">
-                <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-SortLinesDescending.instance"/>
-            </file>
-            <attr name="org-netbeans-modules-linetools-actions-SortLinesDescending.shadow/org-netbeans-modules-linetools-actions-MatchCase.shadow" boolvalue="true"/>
             <file name="org-netbeans-modules-linetools-actions-MatchCase.shadow">
                 <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-MatchCase.instance"/>
+                <attr intvalue="0" name="position"/>
             </file>
-            <attr name="org-netbeans-modules-linetools-actions-MatchCase.shadow/org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow" boolvalue="true"/>
             <file name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow">
                 <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-RemoveDuplicateLines.instance"/>
+                <attr intvalue="10" name="position"/>
             </file>
 
-<!--	    <attr name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow/org-netbeans-modules-linetools-actions-Filter.shadow" boolvalue="true"/>
+<!--	    
+<attr name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.shadow/org-netbeans-modules-linetools-actions-Filter.shadow" boolvalue="true"/>
             <file name="org-netbeans-modules-linetools-actions-Filter.shadow">
                 <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-linetools-actions-Filter.instance"/>
             </file>

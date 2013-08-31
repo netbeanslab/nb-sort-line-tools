@@ -41,13 +41,14 @@
 
 package org.netbeans.modules.linetools.actions;
 
+import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.CookieAction;
 
 public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAction {
 
-    protected int mode() {
-        return CookieAction.MODE_EXACTLY_ONE;
+    public CycleSlashBackslashDotDashAction(EditorCookie context) {
+        super(context);
     }
 
     public String getName() {

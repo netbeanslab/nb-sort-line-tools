@@ -38,9 +38,10 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import org.openide.cookies.EditorCookie;
@@ -55,49 +56,21 @@ import org.openide.windows.TopComponent;
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  * @author markiewb@netbeans.org (applied fixes)
  */
-public abstract class AbstractLineAction extends CookieAction {
+public abstract class AbstractLineAction implements ActionListener {
 
-    protected void performAction(Node[] activatedNodes) {
-        EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
-        if (ec != null) {
-            JEditorPane pane = NbDocument.findRecentEditorPane(ec);
-            if (null != pane) {
-                doLineOperation(pane);
-            }
-        }
+    private final EditorCookie context;
+
+    public AbstractLineAction(EditorCookie context) {
+        this.context = context;
     }
 
-    protected boolean enable(Node[] activatedNodes) {
-        if (activatedNodes == null || activatedNodes.length == 0) {
-            return false;
+    @Override
+    public void actionPerformed(ActionEvent ev) {
+        JEditorPane pane = NbDocument.findRecentEditorPane(context);
+        if (null != pane) {
+            doLineOperation(pane);
         }
-        EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
-        if (ec != null) {
-            final JEditorPane pane = NbDocument.findRecentEditorPane(ec);
-            if (null != pane) {
-                return true;
-            }
-        }
-        return false;
     }
 
     protected abstract void doLineOperation(JTextComponent textComponent);
-
-    protected int mode() {
-        return CookieAction.MODE_EXACTLY_ONE;
-    }
-
-    protected Class[] cookieClasses() {
-        return new Class[] {
-            EditorCookie.class
-        };
-    }
-
-    public HelpCtx getHelpCtx() {
-        return HelpCtx.DEFAULT_HELP;
-    }
-
-    protected boolean asynchronous() {
-        return false;
-    }
 }

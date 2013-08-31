@@ -42,6 +42,7 @@
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 
 /**
@@ -49,6 +50,10 @@ import org.openide.util.NbBundle;
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
 public final class FilterOutput extends AbstractLineAction {
+
+    public FilterOutput(EditorCookie context) {
+        super(context);
+    }
 
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.filterOutput(textComponent);

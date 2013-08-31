@@ -42,12 +42,17 @@
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.openide.cookies.EditorCookie;
 
 /**
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
 public abstract class AbstractCycleLineAction extends AbstractLineAction {
+
+    public AbstractCycleLineAction(EditorCookie context) {
+        super(context);
+    }
     
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.cycle(textComponent, getCycleString());

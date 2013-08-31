@@ -42,24 +42,39 @@
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 
 /**
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
+ * @author markiewb@netbeans.org (applied fixes)
  */
+@ActionID(
+        category = "Editor",
+        id = "org.netbeans.modules.linetools.actions.SortLinesDescending"
+)
+@ActionRegistration(
+        iconBase = "org/netbeans/modules/linetools/actions/sortlinesdescending.gif",
+        displayName = "#CTL_SortLinesDescending"
+)
+@ActionReferences({
+    @ActionReference(path = "Menu/Edit/Line", position = -10),
+    @ActionReference(path = "Toolbars/Line", position = -10)
+})
 public final class SortLinesDescending extends AbstractLineAction {
+
+    public SortLinesDescending(EditorCookie context) {
+        super(context);
+    }
 
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.sortLinesDescending(textComponent);
     }
 
-    public String getName() {
-        return NbBundle.getMessage(SortLinesDescending.class, "CTL_SortLinesDescending"); // NOI18N
-    }
-
-    protected String iconResource(){
-        return "org/netbeans/modules/linetools/actions/sortlinesdescending.gif"; // NOI18N
-    }
 }
 

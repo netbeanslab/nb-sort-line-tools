@@ -42,6 +42,7 @@
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 
 /**
@@ -50,6 +51,10 @@ import org.openide.util.NbBundle;
  * @author markiewb@netbeans.org (applied fixes)
  */
 public class ExchangeDotAndMark extends AbstractLineAction {
+
+    public ExchangeDotAndMark(EditorCookie context) {
+        super(context);
+    }
     
     public String getName() {
         return NbBundle.getMessage(ExchangeDotAndMark.class, "CTL_ExchangeDotAndMark"); // NOI18N
