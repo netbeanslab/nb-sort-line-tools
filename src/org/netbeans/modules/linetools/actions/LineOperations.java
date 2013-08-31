@@ -71,6 +71,7 @@ import org.openide.windows.InputOutput;
 /**
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
+ * @author markiewb@netbeans.org (applied fixes)
  */
 public class LineOperations {
 
@@ -81,7 +82,7 @@ public class LineOperations {
     public  static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
     public  static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
 
-    static void exchangeDotAndMark(JEditorPane textComponent) {
+    static void exchangeDotAndMark(JTextComponent textComponent) {
         Caret caret = textComponent.getCaret();
         // check if there is a selection
         if (caret.isSelectionVisible()) {

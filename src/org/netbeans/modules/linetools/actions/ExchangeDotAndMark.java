@@ -41,77 +41,22 @@
 
 package org.netbeans.modules.linetools.actions;
 
-import javax.swing.JEditorPane;
-import org.openide.cookies.EditorCookie;
-import org.openide.nodes.Node;
-import org.openide.util.HelpCtx;
+import javax.swing.text.JTextComponent;
 import org.openide.util.NbBundle;
-import org.openide.util.actions.CookieAction;
-import org.openide.windows.TopComponent;
 
 /**
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
+ * @author markiewb@netbeans.org (applied fixes)
  */
-public class ExchangeDotAndMark extends CookieAction {
-    
-    protected void performAction(Node[] activatedNodes) {
-        EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
-        if (ec != null) {
-            JEditorPane[] panes = ec.getOpenedPanes();
-            if (panes != null) {
-                TopComponent activetc = TopComponent.getRegistry().getActivated();
-                for (int i = 0; i < panes.length; i++) {
-                    if (activetc.isAncestorOf(panes[i])) {
-                        LineOperations.exchangeDotAndMark(panes[i]);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    protected boolean enable(Node[] activatedNodes) {
-        if (activatedNodes == null || activatedNodes.length == 0) {
-            return false;
-        }
-        EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
-        if (ec != null) {
-            JEditorPane[] panes = ec.getOpenedPanes();
-            if (panes != null) {
-                TopComponent activetc = TopComponent.getRegistry().getActivated();
-                for (int i = 0; i < panes.length; i++) {
-                    if (activetc.isAncestorOf(panes[i])) {
-                        if (panes[i].isEditable()) {
-                            return true;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    protected int mode() {
-        return CookieAction.MODE_EXACTLY_ONE;
-    }
-    
-    protected Class[] cookieClasses() {
-        return new Class[] {
-            EditorCookie.class
-        };
-    }
-    
-    public HelpCtx getHelpCtx() {
-        return HelpCtx.DEFAULT_HELP;
-    }
-    
-    protected boolean asynchronous() {
-        return false;
-    }
+public class ExchangeDotAndMark extends AbstractLineAction {
     
     public String getName() {
         return NbBundle.getMessage(ExchangeDotAndMark.class, "CTL_ExchangeDotAndMark"); // NOI18N
+    }
+
+    @Override
+    protected void doLineOperation(JTextComponent textComponent) {
+        LineOperations.exchangeDotAndMark(textComponent);
     }
 }

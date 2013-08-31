@@ -45,6 +45,7 @@ import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import org.openide.cookies.EditorCookie;
 import org.openide.nodes.Node;
+import org.openide.text.NbDocument;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.CookieAction;
 import org.openide.windows.TopComponent;
@@ -52,21 +53,16 @@ import org.openide.windows.TopComponent;
 /**
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
+ * @author markiewb@netbeans.org (applied fixes)
  */
 public abstract class AbstractLineAction extends CookieAction {
 
     protected void performAction(Node[] activatedNodes) {
         EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
         if (ec != null) {
-            JEditorPane[] panes = ec.getOpenedPanes();
-            if (panes != null) {
-                TopComponent activetc = TopComponent.getRegistry().getActivated();
-                for (int i = 0; i < panes.length; i++) {
-                    if (activetc.isAncestorOf(panes[i])) {
-                        doLineOperation(panes[i]);
-                        break;
-                    }
-                }
+            JEditorPane pane = NbDocument.findRecentEditorPane(ec);
+            if (null != pane) {
+                doLineOperation(pane);
             }
         }
     }
@@ -77,17 +73,9 @@ public abstract class AbstractLineAction extends CookieAction {
         }
         EditorCookie ec = (EditorCookie) activatedNodes[0].getCookie(EditorCookie.class);
         if (ec != null) {
-            JEditorPane[] panes = ec.getOpenedPanes();
-            if (panes != null) {
-                TopComponent activetc = TopComponent.getRegistry().getActivated();
-                for (int i = 0; i < panes.length; i++) {
-                    if (activetc.isAncestorOf(panes[i])) {
-                        if (panes[i].isEditable()) {
-                            return true;
-                        }
-                        break;
-                    }
-                }
+            final JEditorPane pane = NbDocument.findRecentEditorPane(ec);
+            if (null != pane) {
+                return true;
             }
         }
         return false;
