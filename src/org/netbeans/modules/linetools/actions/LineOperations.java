@@ -105,92 +105,97 @@ public class LineOperations {
         sortLines(textComponent, false);
     }
 
-    static final void sortLines(JTextComponent textComponent, boolean descending) {
-        Caret caret = textComponent.getCaret();
-        if (textComponent.isEditable() && caret.isSelectionVisible()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
+    static final void sortLines(final JTextComponent textComponent, final boolean descending) {
+        if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
+            
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Caret caret = textComponent.getCaret();
+                    Element rootElement = doc.getDefaultRootElement();
 
-                int selStart = caret.getDot();
-                int selEnd = caret.getMark();
-                int start = Math.min(selStart, selEnd);
-                int end =   Math.max(selStart, selEnd) - 1;
+                    int selStart = caret.getDot();
+                    int selEnd = caret.getMark();
+                    int start = Math.min(selStart, selEnd);
+                    int end = Math.max(selStart, selEnd) - 1;
 
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-                int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+                    int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
 
-                if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1 || (zeroBaseStartLineNumber == zeroBaseEndLineNumber)) {
-                    // could not get line number or same line
-                    beep();
-                    return;
-                }
-
-                int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-
-                try {
-                    int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
-                    String[] linesText = new String[numberOfLines];
-                    for (int i = 0; i < numberOfLines; i++) {
-                        // get line text
-                        Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
-                        int lineStartOffset = lineElement.getStartOffset();
-                        int lineEndOffset = lineElement.getEndOffset();
-
-                        linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
+                    if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1 || (zeroBaseStartLineNumber == zeroBaseEndLineNumber)) {
+                        // could not get line number or same line
+                        beep();
+                        return;
                     }
 
-                    Comparator comparator = null;
-                    if (descending) {
-                        if (matchCase) {
-                            comparator = REVERSE_STRING_COMPARATOR;
-                        } else {
-                            comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
+                    int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
+                    int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
+
+                    try {
+                        int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
+                        String[] linesText = new String[numberOfLines];
+                        for (int i = 0; i < numberOfLines; i++) {
+                            // get line text
+                            Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
+                            int lineStartOffset = lineElement.getStartOffset();
+                            int lineEndOffset = lineElement.getEndOffset();
+
+                            linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
                         }
-                    } else {
-                        if (matchCase) {
+
+                        Comparator comparator = null;
+                        if (descending) {
+                            if (matchCase) {
+                                comparator = REVERSE_STRING_COMPARATOR;
+                            } else {
+                                comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
+                            }
                         } else {
-                            comparator = String.CASE_INSENSITIVE_ORDER;
+                            if (matchCase) {
+                            } else {
+                                comparator = String.CASE_INSENSITIVE_ORDER;
+                            }
                         }
-                    }
-                    
-                    if (isRemoveDuplicateLines()) {
-                        SortedSet<String> uniqifySet = new TreeSet<String>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
-                        uniqifySet.addAll(Arrays.asList(linesText));
-                        linesText = uniqifySet.toArray(new String[0]);
-                    }
-                    
-                    if (comparator == null) {
+
+                        if (isRemoveDuplicateLines()) {
+                            SortedSet<String> uniqifySet = new TreeSet<String>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
+                            uniqifySet.addAll(Arrays.asList(linesText));
+                            linesText = uniqifySet.toArray(new String[0]);
+                        }
+
+                        if (comparator == null) {
                             Arrays.sort(linesText);
-                    } else {
-                        Arrays.sort(linesText, comparator);
+                        } else {
+                            Arrays.sort(linesText, comparator);
+                        }
+
+                        StringBuffer sb = new StringBuffer();
+                        for (int i = 0; i < linesText.length; i++) {
+                            sb.append(linesText[i]);
+                        }
+
+                        // remove the lines
+                        doc.remove(startOffset, Math.min(doc.getLength(), endOffset) - startOffset);
+
+                        // insert the sorted text
+                        doc.insertString(startOffset, sb.toString(), null);
+
+                    } catch (BadLocationException ex) {
+                        ErrorManager.getDefault().notify(ex);
                     }
-                    
-                    StringBuffer sb = new StringBuffer();
-                    for (int i = 0; i < linesText.length; i++) {
-                        sb.append(linesText[i]);
-                    }
-
-                    // remove the lines
-                    doc.remove(startOffset, Math.min(doc.getLength(),endOffset) - startOffset);
-
-                    // insert the sorted text
-                    doc.insertString(startOffset, sb.toString(), null);
-
-                } catch (BadLocationException ex) {
-                    ErrorManager.getDefault().notify(ex);
                 }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
         } else {
             beep();
+        }
+    }
+
+    private static void runModificationTaskOnDocument(Document doc, Runnable runnable) {
+        if (doc instanceof BaseDocument) {
+            ((BaseDocument)doc).runAtomic(runnable);
+        }else{
+            runnable.run();
         }
     }
 
@@ -238,454 +243,431 @@ public class LineOperations {
     private static Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
 
 
-    static void filter(JTextComponent textComponent) {
-        Caret caret = textComponent.getCaret();
-        if (textComponent.isEditable() && caret.isSelectionVisible()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
+    static void filter(final JTextComponent textComponent) {
+        if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
 
-                int selStart = caret.getDot();
-                int selEnd = caret.getMark();
-                int start = Math.min(selStart, selEnd);
-                int end =   Math.max(selStart, selEnd) - 1;
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Caret caret = textComponent.getCaret();
+                    Element rootElement = doc.getDefaultRootElement();
 
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-                int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
-
-                if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
-                    // could not get line number or same line
-                    beep();
-                    return;
-                }
-
-                NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command:",
-                        "Filter command"
-                        ,NotifyDescriptor.OK_CANCEL_OPTION
-                        ,NotifyDescriptor.PLAIN_MESSAGE);
-
-                if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
-                    int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                    int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-
-                    try {
-                        int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
-                        String[] linesText = new String[numberOfLines];
-                        for (int i = 0; i < numberOfLines; i++) {
-                            // get line text
-                            Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
-                            int lineStartOffset = lineElement.getStartOffset();
-                            int lineEndOffset = lineElement.getEndOffset();
-
-                            linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
-                        }
-
-                        try {
-                            FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
-
-                            PrintWriter in = filterProcess.exec();
-                            for (int i = 0; i < linesText.length; i++) {
-                                in.println(linesText[i]);
-                            }
-                            in.close();
-                            if (filterProcess.waitFor() == 0) {
-                                linesText = filterProcess.getStdOutOutput();
-                                if (linesText != null) {
-                                    StringBuffer sb = new StringBuffer();
-                                    for (int i = 0; i < linesText.length; i++) {
-                                        sb.append(linesText[i] + "\n");
-                                    }
-
-                                    // remove the lines
-                                    doc.remove(startOffset, Math.min(doc.getLength(),endOffset) - startOffset);
-
-                                    // insert the sorted text
-                                    doc.insertString(startOffset, sb.toString(), null);
-                                }
-                            }
-                            filterProcess.destroy();
-                        } catch (IOException fe) {
-                            ErrorManager.getDefault().notify(ErrorManager.USER, fe);
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static void filterOutput(JTextComponent textComponent) {
-        Caret caret = textComponent.getCaret();
-        if (textComponent.isEditable() && caret.isSelectionVisible()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                int selStart = caret.getDot();
-                int selEnd = caret.getMark();
-                int start = Math.min(selStart, selEnd);
-                int end =   Math.max(selStart, selEnd) - 1;
-
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-                int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
-
-                if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
-                    // could not get line number or same line
-                    beep();
-                    return;
-                }
-
-                NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command (output sent to Output window):",
-                        "Filter command"
-                        ,NotifyDescriptor.OK_CANCEL_OPTION
-                        ,NotifyDescriptor.PLAIN_MESSAGE);
-
-                if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
-                    int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                    int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-
-                    try {
-                        int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
-                        String[] linesText = new String[numberOfLines];
-                        for (int i = 0; i < numberOfLines; i++) {
-                            // get line text
-                            Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
-                            int lineStartOffset = lineElement.getStartOffset();
-                            int lineEndOffset = lineElement.getEndOffset();
-
-                            linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
-                        }
-
-                        try {
-                            FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
-
-                            PrintWriter in = filterProcess.exec();
-                            for (int i = 0; i < linesText.length; i++) {
-                                in.println(linesText[i]);
-                            }
-                            in.close();
-                            if (filterProcess.waitFor() == 0) {
-                                InputOutput io = IOProvider.getDefault().getIO(filterCommand.getInputText(), true);
-                                linesText = filterProcess.getStdOutOutput();
-                                if (linesText != null) {
-                                    PrintWriter pw = new PrintWriter(io.getOut());
-                                    for (int i = 0; i < linesText.length; i++) {
-                                        pw.println(linesText[i]);
-                                    }
-                                }
-                                linesText = filterProcess.getStdErrOutput();
-                                if (linesText != null) {
-                                    PrintWriter pw = new PrintWriter(io.getErr());
-                                    for (int i = 0; i < linesText.length; i++) {
-                                        pw.println(linesText[i]);
-                                    }
-                                }
-                            }
-                            filterProcess.destroy();
-                        } catch (IOException fe) {
-                            ErrorManager.getDefault().notify(ErrorManager.USER, fe);
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static final void fromChar(JTextComponent textComponent, char fromChar, boolean matchCase, int times) {
-        if (textComponent.isEditable()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                Caret caret = textComponent.getCaret();
-                int start = textComponent.getCaretPosition();
-
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-
-                if (zeroBaseStartLineNumber == -1) {
-                    // could not get line number
-                    beep();
-                    return;
-                } else {
-                    int startLineStartOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                    try {
-                        String text = doc.getText(startLineStartOffset, start - startLineStartOffset);
-
-                        char lowercaseFromChar = Character.toLowerCase(fromChar);
-                        int textLength = text.length();
-                        for (int i = textLength-1; i >= 0; i--) {
-                            char charAt = text.charAt(i);
-                            if (charAt == fromChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseFromChar)) {
-                                times--;
-                                if (times == 0) {
-                                    caret.moveDot(startLineStartOffset + i);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static final void afterChar(JTextComponent textComponent, char afterChar, boolean matchCase, int times) {
-        if (textComponent.isEditable()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                Caret caret = textComponent.getCaret();
-                int start = textComponent.getCaretPosition();
-
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-
-                if (zeroBaseStartLineNumber == -1) {
-                    // could not get line number
-                    beep();
-                    return;
-                } else {
-                    int startLineStartOffset =  rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                   try {
-                        String text = doc.getText(startLineStartOffset, start - startLineStartOffset);
-
-                        char lowercaseAfterChar = Character.toLowerCase(afterChar);
-                        int textLength = text.length();
-                        for (int i = textLength-1; i >= 0; i--) {
-                            char charAt = text.charAt(i);
-                            if (charAt == afterChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseAfterChar)) {
-                                times--;
-                                if (times == 0) {
-                                    caret.moveDot(startLineStartOffset + i + 1);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static final void uptoChar(JTextComponent textComponent, char uptoChar, boolean matchCase, int times) {
-        if (textComponent.isEditable()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                Caret caret = textComponent.getCaret();
-                int start = textComponent.getCaretPosition();
-
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-
-                if (zeroBaseStartLineNumber == -1) {
-                    // could not get line number
-                    beep();
-                    return;
-                } else {
-                    int startLineEndOffset = rootElement.getElement(zeroBaseStartLineNumber).getEndOffset();
-                    try {
-                        String text = doc.getText(start + 1, startLineEndOffset - start - 1);
-
-                        char lowercaseUptoChar = Character.toLowerCase(uptoChar);
-                        int textLength = text.length();
-                        for (int i = 0; i < textLength; i++) {
-                            char charAt = text.charAt(i);
-                            if (charAt == uptoChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseUptoChar)) {
-                                times--;
-                                if (times == 0) {
-                                    caret.moveDot(start+1+i);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static final void toChar(JTextComponent textComponent, char toChar, boolean matchCase, int times) {
-        if (textComponent.isEditable()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                Caret caret = textComponent.getCaret();
-                int start = textComponent.getCaretPosition();
-
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-
-                if (zeroBaseStartLineNumber == -1) {
-                    // could not get line number
-                    beep();
-                    return;
-                } else {
-                    int startLineEndOffset = rootElement.getElement(zeroBaseStartLineNumber).getEndOffset();
-                    try {
-                        String text = doc.getText(start + 1, startLineEndOffset - start - 1);
-
-                        char lowercaseToChar = Character.toLowerCase(toChar);
-                        int textLength = text.length();
-                        for (int i = 0; i < textLength; i++) {
-                            char charAt = text.charAt(i);
-                            if (charAt == toChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseToChar)) {
-                                times--;
-                                if (times == 0) {
-                                    caret.moveDot(start+1+i+1);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
-                    }
-                }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
-                }
-            }
-        } else {
-            beep();
-        }
-    }
-
-    static final void cycle(JTextComponent textComponent, String cycleString) {
-        if (textComponent.isEditable()) {
-            Document doc = textComponent.getDocument();
-            if (doc instanceof BaseDocument) {
-                ((BaseDocument)doc).atomicLock();
-            }
-            try {
-                Element rootElement = doc.getDefaultRootElement();
-
-                Caret caret = textComponent.getCaret();
-                boolean selection = false;
-                boolean backwardSelection = false;
-                int start = textComponent.getCaretPosition();
-                int end = start;
-
-                // check if there is a selection
-                if (caret.isSelectionVisible()) {
                     int selStart = caret.getDot();
                     int selEnd = caret.getMark();
-                    start = Math.min(selStart, selEnd);
-                    end =   Math.max(selStart, selEnd);
-                    selection = true;
-                    backwardSelection = (selStart >= selEnd);
-                }
+                    int start = Math.min(selStart, selEnd);
+                    int end = Math.max(selStart, selEnd) - 1;
 
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+                    int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
 
-                int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-                int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
+                    if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
+                        // could not get line number or same line
+                        beep();
+                        return;
+                    }
 
-                if (zeroBaseStartLineNumber == -1) {
-                    // could not get line number
-                    beep();
-                    return;
-                } else {
-                    try {
-                        // get line text
-                        Element startLineElement = rootElement.getElement(zeroBaseStartLineNumber);
-                        int startLineStartOffset = startLineElement.getStartOffset();
+                    NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command:",
+                            "Filter command", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
 
-                        Element endLineElement = rootElement.getElement(zeroBaseEndLineNumber);
-                        int endLineEndOffset = endLineElement.getEndOffset();
+                    if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
+                        int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
+                        int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
 
-                        if (!selection) {
-                            start = startLineStartOffset;
-                            end = endLineEndOffset;
-                        }
+                        try {
+                            int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
+                            String[] linesText = new String[numberOfLines];
+                            for (int i = 0; i < numberOfLines; i++) {
+                                // get line text
+                                Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
+                                int lineStartOffset = lineElement.getStartOffset();
+                                int lineEndOffset = lineElement.getEndOffset();
 
-                        String linesText = doc.getText(start, (end - start));
-
-                        linesText = cycle(linesText, cycleString);
-
-                        // replace the line or selection
-                        doc.remove(start, Math.min(doc.getLength(),end) - start);
-
-                        // insert the text before the previous line
-                        doc.insertString(start, linesText, null);
-
-                        if (selection) {
-                            if (backwardSelection) {
-                                caret.setDot(start);
-                                caret.moveDot(end);
-                            } else {
-                                caret.setDot(end);
-                                caret.moveDot(start);
+                                linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
                             }
-                        } else {
-                            // set caret position
-                            textComponent.setCaretPosition(start);
+
+                            try {
+                                FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
+
+                                PrintWriter in = filterProcess.exec();
+                                for (int i = 0; i < linesText.length; i++) {
+                                    in.println(linesText[i]);
+                                }
+                                in.close();
+                                if (filterProcess.waitFor() == 0) {
+                                    linesText = filterProcess.getStdOutOutput();
+                                    if (linesText != null) {
+                                        StringBuffer sb = new StringBuffer();
+                                        for (int i = 0; i < linesText.length; i++) {
+                                            sb.append(linesText[i] + "\n");
+                                        }
+
+                                        // remove the lines
+                                        doc.remove(startOffset, Math.min(doc.getLength(), endOffset) - startOffset);
+
+                                        // insert the sorted text
+                                        doc.insertString(startOffset, sb.toString(), null);
+                                    }
+                                }
+                                filterProcess.destroy();
+                            } catch (IOException fe) {
+                                ErrorManager.getDefault().notify(ErrorManager.USER, fe);
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ex);
                         }
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ex);
                     }
                 }
-            } finally {
-                if (doc instanceof BaseDocument) {
-                    ((BaseDocument)doc).atomicUnlock();
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+        } else {
+            beep();
+        }
+    }
+
+    static void filterOutput(final JTextComponent textComponent) {
+        if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Caret caret = textComponent.getCaret();
+                    
+                    Element rootElement = doc.getDefaultRootElement();
+                    
+                    int selStart = caret.getDot();
+                    int selEnd = caret.getMark();
+                    int start = Math.min(selStart, selEnd);
+                    int end = Math.max(selStart, selEnd) - 1;
+                    
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+                    int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
+                    
+                    if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
+                        // could not get line number or same line
+                        beep();
+                        return;
+                    }
+                    
+                    NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command (output sent to Output window):",
+                            "Filter command", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+                    
+                    if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
+                        int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
+                        int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
+                        
+                        try {
+                            int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
+                            String[] linesText = new String[numberOfLines];
+                            for (int i = 0; i < numberOfLines; i++) {
+                                // get line text
+                                Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
+                                int lineStartOffset = lineElement.getStartOffset();
+                                int lineEndOffset = lineElement.getEndOffset();
+                                
+                                linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
+                            }
+                            
+                            try {
+                                FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
+                                
+                                PrintWriter in = filterProcess.exec();
+                                for (int i = 0; i < linesText.length; i++) {
+                                    in.println(linesText[i]);
+                                }
+                                in.close();
+                                if (filterProcess.waitFor() == 0) {
+                                    InputOutput io = IOProvider.getDefault().getIO(filterCommand.getInputText(), true);
+                                    linesText = filterProcess.getStdOutOutput();
+                                    if (linesText != null) {
+                                        PrintWriter pw = new PrintWriter(io.getOut());
+                                        for (int i = 0; i < linesText.length; i++) {
+                                            pw.println(linesText[i]);
+                                        }
+                                    }
+                                    linesText = filterProcess.getStdErrOutput();
+                                    if (linesText != null) {
+                                        PrintWriter pw = new PrintWriter(io.getErr());
+                                        for (int i = 0; i < linesText.length; i++) {
+                                            pw.println(linesText[i]);
+                                        }
+                                    }
+                                }
+                                filterProcess.destroy();
+                            } catch (IOException fe) {
+                                ErrorManager.getDefault().notify(ErrorManager.USER, fe);
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ex);
+                        }
+                    }
                 }
-            }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+                
+        } else {
+            beep();
+        }
+    }
+
+    static final void fromChar(final JTextComponent textComponent, final char fromChar, final boolean matchCase, final int times) {
+        if (textComponent.isEditable()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Element rootElement = doc.getDefaultRootElement();
+
+                    Caret caret = textComponent.getCaret();
+                    int start = textComponent.getCaretPosition();
+
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+
+                    if (zeroBaseStartLineNumber == -1) {
+                        // could not get line number
+                        beep();
+                        return;
+                    } else {
+                        int startLineStartOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
+                        try {
+                            String text = doc.getText(startLineStartOffset, start - startLineStartOffset);
+
+                            char lowercaseFromChar = Character.toLowerCase(fromChar);
+                            int textLength = text.length();
+                            int timesCounter=times;
+                            for (int i = textLength - 1; i >= 0; i--) {
+                                char charAt = text.charAt(i);
+                                if (charAt == fromChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseFromChar)) {
+                                    timesCounter--;
+                                    if (timesCounter == 0) {
+                                        caret.moveDot(startLineStartOffset + i);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
+                        }
+                    }
+                }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+        } else {
+            beep();
+        }
+    }
+
+    static final void afterChar(final JTextComponent textComponent, final char afterChar, final boolean matchCase, final int times) {
+        if (textComponent.isEditable()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Element rootElement = doc.getDefaultRootElement();
+
+                    Caret caret = textComponent.getCaret();
+                    int start = textComponent.getCaretPosition();
+
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+
+                    if (zeroBaseStartLineNumber == -1) {
+                        // could not get line number
+                        beep();
+                        return;
+                    } else {
+                        int startLineStartOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
+                        try {
+                            String text = doc.getText(startLineStartOffset, start - startLineStartOffset);
+
+                            char lowercaseAfterChar = Character.toLowerCase(afterChar);
+                            int textLength = text.length();
+                            int countTimes = times;
+                            for (int i = textLength - 1; i >= 0; i--) {
+                                char charAt = text.charAt(i);
+                                if (charAt == afterChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseAfterChar)) {
+                                    countTimes--;
+                                    if (countTimes == 0) {
+                                        caret.moveDot(startLineStartOffset + i + 1);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
+                        }
+                    }
+                }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+        } else {
+            beep();
+        }
+    }
+
+    static final void uptoChar(final JTextComponent textComponent, final  char uptoChar, final boolean matchCase, final int times) {
+        if (textComponent.isEditable()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+                    Element rootElement = doc.getDefaultRootElement();
+
+                    Caret caret = textComponent.getCaret();
+                    int start = textComponent.getCaretPosition();
+
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+
+                    if (zeroBaseStartLineNumber == -1) {
+                        // could not get line number
+                        beep();
+                        return;
+                    } else {
+                        int startLineEndOffset = rootElement.getElement(zeroBaseStartLineNumber).getEndOffset();
+                        try {
+                            String text = doc.getText(start + 1, startLineEndOffset - start - 1);
+
+                            char lowercaseUptoChar = Character.toLowerCase(uptoChar);
+                            int textLength = text.length();
+                            int countTimes = times;
+
+                            for (int i = 0; i < textLength; i++) {
+                                char charAt = text.charAt(i);
+                                if (charAt == uptoChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseUptoChar)) {
+                                    countTimes--;
+                                    if (countTimes == 0) {
+                                        caret.moveDot(start + 1 + i);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
+                        }
+                    }
+                }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+        } else {
+            beep();
+        }
+    }
+
+    static final void toChar(final JTextComponent textComponent, final char toChar, final boolean matchCase, final int times) {
+        if (textComponent.isEditable()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+
+                    Element rootElement = doc.getDefaultRootElement();
+
+                    Caret caret = textComponent.getCaret();
+                    int start = textComponent.getCaretPosition();
+
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+
+                    if (zeroBaseStartLineNumber == -1) {
+                        // could not get line number
+                        beep();
+                        return;
+                    } else {
+                        int startLineEndOffset = rootElement.getElement(zeroBaseStartLineNumber).getEndOffset();
+                        try {
+                            String text = doc.getText(start + 1, startLineEndOffset - start - 1);
+
+                            char lowercaseToChar = Character.toLowerCase(toChar);
+                            int textLength = text.length();
+                            int countTimes = times;
+                            for (int i = 0; i < textLength; i++) {
+                                char charAt = text.charAt(i);
+                                if (charAt == toChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseToChar)) {
+                                    countTimes--;
+                                    if (countTimes == 0) {
+                                        caret.moveDot(start + 1 + i + 1);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
+                        }
+                    }
+                }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
+        } else {
+            beep();
+        }
+    }
+
+    static final void cycle(final JTextComponent textComponent, final String cycleString) {
+        if (textComponent.isEditable()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Document doc = textComponent.getDocument();
+
+                    Element rootElement = doc.getDefaultRootElement();
+
+                    Caret caret = textComponent.getCaret();
+                    boolean selection = false;
+                    boolean backwardSelection = false;
+                    int start = textComponent.getCaretPosition();
+                    int end = start;
+
+                    // check if there is a selection
+                    if (caret.isSelectionVisible()) {
+                        int selStart = caret.getDot();
+                        int selEnd = caret.getMark();
+                        start = Math.min(selStart, selEnd);
+                        end = Math.max(selStart, selEnd);
+                        selection = true;
+                        backwardSelection = (selStart >= selEnd);
+                    }
+
+                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+                    int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
+
+                    if (zeroBaseStartLineNumber == -1) {
+                        // could not get line number
+                        beep();
+                        return;
+                    } else {
+                        try {
+                            // get line text
+                            Element startLineElement = rootElement.getElement(zeroBaseStartLineNumber);
+                            int startLineStartOffset = startLineElement.getStartOffset();
+
+                            Element endLineElement = rootElement.getElement(zeroBaseEndLineNumber);
+                            int endLineEndOffset = endLineElement.getEndOffset();
+
+                            if (!selection) {
+                                start = startLineStartOffset;
+                                end = endLineEndOffset;
+                            }
+
+                            String linesText = doc.getText(start, (end - start));
+
+                            linesText = cycle(linesText, cycleString);
+
+                            // replace the line or selection
+                            doc.remove(start, Math.min(doc.getLength(), end) - start);
+
+                            // insert the text before the previous line
+                            doc.insertString(start, linesText, null);
+
+                            if (selection) {
+                                if (backwardSelection) {
+                                    caret.setDot(start);
+                                    caret.moveDot(end);
+                                } else {
+                                    caret.setDot(end);
+                                    caret.moveDot(start);
+                                }
+                            } else {
+                                // set caret position
+                                textComponent.setCaretPosition(start);
+                            }
+                        } catch (BadLocationException ex) {
+                            ErrorManager.getDefault().notify(ex);
+                        }
+                    }
+                }
+            };
+            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
         } else {
             beep();
         }
