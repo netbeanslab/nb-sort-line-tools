@@ -143,7 +143,7 @@ public class LineOperations {
                             linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
                         }
 
-                        Comparator comparator = null;
+                        Comparator<String> comparator = null;
                         if (descending) {
                             if (matchCase) {
                                 comparator = REVERSE_STRING_COMPARATOR;
