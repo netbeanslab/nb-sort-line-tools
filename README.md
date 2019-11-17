@@ -1,13 +1,9 @@
-<hr>
-<h1 style="color: #FF0000">Looking for maintainers, who want to take over the development!</h1>
-<hr>
-
 nb-sort-line-tools
 ==================
 
 NetBeans plugin which adds a toolbar with texteditor operations for sorting 
 
-![Screenshot](https://raw.github.com/markiewb/nb-sort-line-tools/master/src/screenshot.png)
+![Screenshot](screenshots/screenshot.png)
 
 Support following operations in text editors:
 
