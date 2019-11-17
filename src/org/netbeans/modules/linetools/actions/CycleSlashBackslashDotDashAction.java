@@ -43,7 +43,6 @@ package org.netbeans.modules.linetools.actions;
 
 import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
-import org.openide.util.actions.CookieAction;
 
 public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAction {
 
