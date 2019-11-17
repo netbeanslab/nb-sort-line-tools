@@ -106,7 +106,7 @@ public class LineOperations {
 
     static final void sortLines(final JTextComponent textComponent, final boolean descending) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
-            
+
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -332,30 +332,30 @@ public class LineOperations {
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
-                    
+
                     Element rootElement = doc.getDefaultRootElement();
-                    
+
                     int selStart = caret.getDot();
                     int selEnd = caret.getMark();
                     int start = Math.min(selStart, selEnd);
                     int end = Math.max(selStart, selEnd) - 1;
-                    
+
                     int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
                     int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
-                    
+
                     if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
                         // could not get line number or same line
                         beep();
                         return;
                     }
-                    
+
                     NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command (output sent to Output window):",
                             "Filter command", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
-                    
+
                     if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
                         int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
                         int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-                        
+
                         try {
                             int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
                             String[] linesText = new String[numberOfLines];
@@ -364,13 +364,13 @@ public class LineOperations {
                                 Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
                                 int lineStartOffset = lineElement.getStartOffset();
                                 int lineEndOffset = lineElement.getEndOffset();
-                                
+
                                 linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
                             }
-                            
+
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
-                                
+
                                 PrintWriter in = filterProcess.exec();
                                 for (int i = 0; i < linesText.length; i++) {
                                     in.println(linesText[i]);
@@ -404,7 +404,7 @@ public class LineOperations {
                 }
             };
             runModificationTaskOnDocument(textComponent.getDocument(), runnable);
-                
+
         } else {
             beep();
         }

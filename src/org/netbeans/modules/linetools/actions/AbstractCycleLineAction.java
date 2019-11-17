@@ -53,11 +53,11 @@ public abstract class AbstractCycleLineAction extends AbstractLineAction {
     public AbstractCycleLineAction(EditorCookie context) {
         super(context);
     }
-    
+
     @Override
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.cycle(textComponent, getCycleString());
     }
-    
+
     protected abstract String getCycleString();
 }

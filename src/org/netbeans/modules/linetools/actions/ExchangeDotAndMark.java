@@ -55,7 +55,7 @@ public class ExchangeDotAndMark extends AbstractLineAction {
     public ExchangeDotAndMark(EditorCookie context) {
         super(context);
     }
-    
+
     public String getName() {
         return NbBundle.getMessage(ExchangeDotAndMark.class, "CTL_ExchangeDotAndMark"); // NOI18N
     }
