@@ -61,12 +61,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
-import org.netbeans.editor.Registry;
-import org.netbeans.editor.SideBarFactory;
+import org.netbeans.api.editor.EditorRegistry;
+import org.netbeans.spi.editor.SideBarFactory;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
 
 /**
  * This action installs the Firefox(TM) style Incremental Search Side Bar.
@@ -104,7 +104,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         });
 
         closeButton = new JButton(" ",
-                new ImageIcon(Utilities.loadImage("org/netbeans/modules/linetools/actions/close.gif"))); // NOI18N
+                new ImageIcon(ImageUtilities.loadImage("org/netbeans/modules/linetools/actions/close.gif"))); // NOI18N
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 looseFocus();
@@ -217,16 +217,16 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         looseFocus();
         switch (mode) {
             case FROM:
-                LineOperations.fromChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.fromChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case AFTER:
-                LineOperations.afterChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.afterChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case UPTO:
-                LineOperations.uptoChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.uptoChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case TO:
-                LineOperations.toChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.toChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
         }
     }
@@ -239,7 +239,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
 
     private void looseFocus() {
         setVisible(false);
-        JTextComponent textComponent = Registry.getMostActiveComponent();
+        JTextComponent textComponent = EditorRegistry.focusedComponent();
         if (textComponent != null && textComponent.isEnabled()) {
             textComponent.requestFocusInWindow();
         }
