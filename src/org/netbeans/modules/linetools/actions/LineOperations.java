@@ -108,6 +108,7 @@ public class LineOperations {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
             
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
@@ -246,6 +247,7 @@ public class LineOperations {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
 
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
@@ -326,6 +328,7 @@ public class LineOperations {
     static void filterOutput(final JTextComponent textComponent) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
@@ -410,6 +413,7 @@ public class LineOperations {
     static final void fromChar(final JTextComponent textComponent, final char fromChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -456,6 +460,7 @@ public class LineOperations {
     static final void afterChar(final JTextComponent textComponent, final char afterChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -502,6 +507,7 @@ public class LineOperations {
     static final void uptoChar(final JTextComponent textComponent, final  char uptoChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -549,6 +555,7 @@ public class LineOperations {
     static final void toChar(final JTextComponent textComponent, final char toChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
 
@@ -596,6 +603,7 @@ public class LineOperations {
     static final void cycle(final JTextComponent textComponent, final String cycleString) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
 

@@ -59,25 +59,30 @@ public final class MatchCase extends BooleanStateAction implements PropertyChang
         addPropertyChangeListener(this);
     }
 
+    @Override
     protected void initialize() {
         super.initialize();
         setBooleanState(LineOperations.isMatchCase());
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(PROP_BOOLEAN_STATE)) {
             LineOperations.setMatchCase(getBooleanState());
         }
     }
 
+    @Override
     public String getName() {
         return NbBundle.getMessage(RemoveDuplicateLines.class, "CTL_MatchCase"); // NOI18N
     }
 
+    @Override
     protected String iconResource() {
         return "org/netbeans/modules/linetools/actions/matchcase.gif"; // NOI18N
     }
 
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }

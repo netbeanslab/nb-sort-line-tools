@@ -55,6 +55,7 @@ public final class Filter extends AbstractLineAction {
         super(context);
     }
 
+    @Override
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.filter(textComponent);
     }

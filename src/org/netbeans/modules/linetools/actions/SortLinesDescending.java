@@ -71,6 +71,7 @@ public final class SortLinesDescending extends AbstractLineAction {
         super(context);
     }
 
+    @Override
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.sortLinesDescending(textComponent);
     }

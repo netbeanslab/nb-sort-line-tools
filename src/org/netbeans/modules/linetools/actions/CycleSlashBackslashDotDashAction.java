@@ -58,6 +58,7 @@ public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAct
         return "org/netbeans/modules/linetools/actions/cycle.gif"; // NOI18N
     }
 
+    @Override
     protected String getCycleString() {
         return LineOperations.FILE_SEPARATORS_DOT_DASH;
     }

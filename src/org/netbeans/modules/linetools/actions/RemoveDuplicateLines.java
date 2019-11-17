@@ -58,25 +58,30 @@ public final class RemoveDuplicateLines extends BooleanStateAction implements Pr
         addPropertyChangeListener(this);
     }
 
+    @Override
     protected void initialize() {
         super.initialize();
         setBooleanState(LineOperations.isRemoveDuplicateLines());
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(PROP_BOOLEAN_STATE)) {
             LineOperations.setRemoveDuplicateLines(getBooleanState());
         }
     }
 
+    @Override
     public String getName() {
         return NbBundle.getMessage(RemoveDuplicateLines.class, "CTL_RemoveDuplicateLines"); // NOI18N
     }
 
+    @Override
     protected String iconResource() {
         return "org/netbeans/modules/linetools/actions/removeduplicatelines.gif"; // NOI18N
     }
 
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }
