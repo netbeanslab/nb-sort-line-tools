@@ -80,7 +80,7 @@ public class FilterProcess {
         filterProcess = Runtime.getRuntime().exec(filterCommand);
 
         // Setup STDOUT Reading
-        filterProcessStdOut = new ArrayList<String>();
+        filterProcessStdOut = new ArrayList<>();
         Thread filterProcessStdOutReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getInputStream(),
                     filterProcessStdOut),
@@ -88,7 +88,7 @@ public class FilterProcess {
         filterProcessStdOutReader.start();
 
         // Setup STDERR Reading
-        filterProcessStdErr = new ArrayList<String>(expectedNumberOfOutputLines);
+        filterProcessStdErr = new ArrayList<>(expectedNumberOfOutputLines);
         Thread filterProcessStdErrReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getErrorStream(),
                     filterProcessStdErr),

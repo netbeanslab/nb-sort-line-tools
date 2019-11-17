@@ -158,7 +158,7 @@ public class LineOperations {
                         }
 
                         if (isRemoveDuplicateLines()) {
-                            SortedSet<String> uniqifySet = new TreeSet<String>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
+                            SortedSet<String> uniqifySet = new TreeSet<>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
                             uniqifySet.addAll(Arrays.asList(linesText));
                             linesText = uniqifySet.toArray(new String[0]);
                         }
@@ -701,7 +701,7 @@ public class LineOperations {
                 return target;
             case 1:
                 char from = set.iterator().next();
-                List<Character> cycleList = new ArrayList<Character>(cycleSet);
+                List<Character> cycleList = new ArrayList<>(cycleSet);
                 char to = cycleList.get((cycleList.indexOf(from) + 1)%cycleList.size());
                 return target.replace(from,to);
             default:
@@ -721,11 +721,11 @@ public class LineOperations {
         }
 
         if (target.length() == 0) {
-            return new LinkedHashSet<Character>();
+            return new LinkedHashSet<>();
         }
 
         if (target.length() == 1) {
-            return new LinkedHashSet<Character>(Collections.<Character>singleton(target.charAt(0)));
+            return new LinkedHashSet<>(Collections.<Character>singleton(target.charAt(0)));
         }
 
         char[] targetarray = target.toCharArray();
@@ -734,7 +734,7 @@ public class LineOperations {
             targetArray[i] = targetarray[i];
         }
 
-        Set<Character> targetCharsSet = new LinkedHashSet<Character>(Arrays.<Character>asList(targetArray));
+        Set<Character> targetCharsSet = new LinkedHashSet<>(Arrays.<Character>asList(targetArray));
 
         return targetCharsSet;
     }
