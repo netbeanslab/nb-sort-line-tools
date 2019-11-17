@@ -43,6 +43,7 @@ package org.netbeans.modules.linetools.actions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.BooleanStateAction;
@@ -78,7 +79,7 @@ public final class RemoveDuplicateLines extends BooleanStateAction implements Pr
 
     @Override
     protected String iconResource() {
-        return "org/netbeans/modules/linetools/actions/removeduplicatelines.gif"; // NOI18N
+        return Utils.REMOVEDUPLICATELINES_ICON;
     }
 
     @Override

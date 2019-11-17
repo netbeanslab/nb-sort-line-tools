@@ -62,6 +62,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.EditorRegistry;
+import org.netbeans.modules.linetools.utils.Utils;
 import org.netbeans.spi.editor.SideBarFactory;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
@@ -105,7 +106,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         });
 
         closeButton = new JButton(" ",
-                new ImageIcon(ImageUtilities.loadImage("org/netbeans/modules/linetools/actions/close.gif"))); // NOI18N
+                new ImageIcon(ImageUtilities.loadImage(Utils.CLOSE_ICON))); // NOI18N
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

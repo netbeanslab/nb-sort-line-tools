@@ -42,6 +42,7 @@
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 
@@ -65,7 +66,6 @@ public final class FilterOutput extends AbstractLineAction {
     }
 
     protected String iconResource() {
-        return "org/netbeans/modules/linetools/actions/filteroutput.gif"; // NOI18N
+        return Utils.FILTEROUTPUT_ICON;
     }
 }
-

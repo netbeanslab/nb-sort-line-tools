@@ -41,6 +41,7 @@
 
 package org.netbeans.modules.linetools.actions;
 
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
 
@@ -55,7 +56,7 @@ public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAct
     }
 
     protected String iconResource() {
-        return "org/netbeans/modules/linetools/actions/cycle.gif"; // NOI18N
+        return Utils.CYCLE_ICON;
     }
 
     @Override

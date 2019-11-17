@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2019 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common
@@ -38,57 +38,30 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
+package org.netbeans.modules.linetools.utils;
 
-package org.netbeans.modules.linetools.actions;
+import org.netbeans.api.annotations.common.StaticResource;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import org.netbeans.modules.linetools.utils.Utils;
-import org.openide.util.HelpCtx;
-import org.openide.util.NbBundle;
-import org.openide.util.actions.BooleanStateAction;
+public final class Utils {
 
-/**
- * The action to enables and disables case sensitive sorting. This also affects
- * how the remove duplicates functionality works.
- *
- * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
- */
-public final class MatchCase extends BooleanStateAction implements PropertyChangeListener {
+    @StaticResource
+    public static final String CLOSE_ICON = "org/netbeans/modules/linetools/resources/close.gif"; // NOI18N
+    @StaticResource
+    public static final String CYCLE_ICON = "org/netbeans/modules/linetools/resources/cycle.gif"; // NOI18N
+    @StaticResource
+    public static final String FILTER_ICON = "org/netbeans/modules/linetools/resources/filter.gif"; // NOI18N
+    @StaticResource
+    public static final String FILTEROUTPUT_ICON = "org/netbeans/modules/linetools/resources/filteroutput.gif"; // NOI18N
+    @StaticResource
+    public static final String MATCHCASE_ICON = "org/netbeans/modules/linetools/resources/matchcase.gif"; // NOI18N
+    @StaticResource
+    public static final String REMOVEDUPLICATELINES_ICON = "org/netbeans/modules/linetools/resources/removeduplicatelines.gif"; // NOI18N
+    @StaticResource
+    public static final String SORTLINESASCENDING_ICON = "org/netbeans/modules/linetools/resources/sortlinesascending.gif"; // NOI18N
+    @StaticResource
+    public static final String SORTLINESDESCENDING_ICON = "org/netbeans/modules/linetools/resources/sortlinesdescending.gif"; // NOI18N
 
-    public MatchCase() {
-        addPropertyChangeListener(this);
+    private Utils() {
     }
 
-    @Override
-    protected void initialize() {
-        super.initialize();
-        setBooleanState(LineOperations.isMatchCase());
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PROP_BOOLEAN_STATE)) {
-            LineOperations.setMatchCase(getBooleanState());
-        }
-    }
-
-    @Override
-    public String getName() {
-        return NbBundle.getMessage(RemoveDuplicateLines.class, "CTL_MatchCase"); // NOI18N
-    }
-
-    @Override
-    protected String iconResource() {
-        return Utils.MATCHCASE_ICON;
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return HelpCtx.DEFAULT_HELP;
-    }
-
-    protected boolean asynchronous() {
-        return false;
-    }
 }
