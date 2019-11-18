@@ -45,11 +45,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import org.openide.cookies.EditorCookie;
-import org.openide.nodes.Node;
 import org.openide.text.NbDocument;
-import org.openide.util.HelpCtx;
-import org.openide.util.actions.CookieAction;
-import org.openide.windows.TopComponent;
 
 /**
  *

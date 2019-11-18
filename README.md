@@ -1,30 +1,34 @@
-<hr>
-<h1 style="color: #FF0000">Looking for maintainers, who want to take over the development!</h1>
-<hr>
-
 nb-sort-line-tools
 ==================
 
-NetBeans plugin which adds a toolbar with texteditor operations for sorting 
+NetBeans plugin which adds a toolbar with texteditor operations for sorting
 
-![Screenshot](https://raw.github.com/markiewb/nb-sort-line-tools/master/src/screenshot.png)
+![Screenshot](screenshots/screenshot.png)
 
-Support following operations in text editors:
+## Features
 
-1. Sort lines spanned by selection in ascending/descending (in-)case-sensitive order
+1. Sort lines spanned by selection in ascending/descending (in-)case-sensitive order.
 2. Remove duplicate lines while sorting.
 
 You can also assign shortcuts to these actions.
 
-Plugin is available via http://plugins.netbeans.org/plugin/45925
+## Downloads
 
-Further information:
-This plugin is based on the _"Line Tools"_ plugin from _sandipchitale_ @ 
-http://plugins.netbeans.org/plugin/3857/line-tools
-It is mainly a repackaging to be compatible with NetBeans 7.x. 
-All obsolete features except sorting are disabled. No bugs were fixed or features added. 
+- https://github.com/netbeanslabo/nb-sort-line-tools/releases
+- http://plugins.netbeans.org/plugin/45925
+
+## Further information:
+
+This plugin is based on the _"Line Tools"_ plugin from _sandipchitale_ @ (http://plugins.netbeans.org/plugin/3857/line-tools)
+It is mainly a repackaging to be compatible with NetBeans 7.x.
+
+All obsolete features except sorting are disabled. No bugs were fixed or features added.
 Original sourcecode can be found at http://hg.netbeans.org/main/contrib/file/tip/linetools
 
-License remains CDDL - http://www.netbeans.org/cddl-gplv2.html
+## Requirements
 
-Compatible to NetBeans 7.0 and higher
+- NetBeans 11.0 and higher
+
+## License
+
+License remains CDDL - http://www.netbeans.org/cddl-gplv2.html

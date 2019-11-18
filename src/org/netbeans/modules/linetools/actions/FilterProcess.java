@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.io.BufferedReader;
@@ -55,51 +54,51 @@ import org.openide.ErrorManager;
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
 public class FilterProcess {
-    
+
     private String[] filterCommand;
     private int expectedNumberOfOutputLines;
-    
+
     private Process filterProcess;
-    
+
     private PrintWriter printWriter;
-    
+
     private List<String> filterProcessStdOut;
     private List<String> filterProcessStdErr;
-    
+
     public FilterProcess(String[] filterCommand) {
         this(filterCommand, 100);
     }
-    
+
     public FilterProcess(String[] filterCommand, int expectedNumberOfOutputLines) {
         this.filterCommand = filterCommand;
         this.expectedNumberOfOutputLines = expectedNumberOfOutputLines;
     }
-    
+
     public PrintWriter exec() throws IOException {
         // Run the filter process
         filterProcess = Runtime.getRuntime().exec(filterCommand);
-        
+
         // Setup STDOUT Reading
-        filterProcessStdOut = new ArrayList<String>();
+        filterProcessStdOut = new ArrayList<>();
         Thread filterProcessStdOutReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getInputStream(),
-                    filterProcessStdOut),
-                    filterCommand[0] + ":STDOUT Reader"); // NOI18N
+                        filterProcessStdOut),
+                filterCommand[0] + ":STDOUT Reader"); // NOI18N
         filterProcessStdOutReader.start();
-        
+
         // Setup STDERR Reading
-        filterProcessStdErr = new ArrayList<String>(expectedNumberOfOutputLines);
+        filterProcessStdErr = new ArrayList<>(expectedNumberOfOutputLines);
         Thread filterProcessStdErrReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getErrorStream(),
-                    filterProcessStdErr),
-                    filterCommand[0] + ":STDERR Reader"); // NOI18N
+                        filterProcessStdErr),
+                filterCommand[0] + ":STDERR Reader"); // NOI18N
         filterProcessStdErrReader.start();
-        
+
         printWriter = new PrintWriter(filterProcess.getOutputStream());
-        
+
         return printWriter;
     }
-       
+
     public int waitFor() {
         if (filterProcess != null) {
             int exitStatus;
@@ -111,21 +110,21 @@ public class FilterProcess {
         }
         return -1;
     }
-    
+
     public String[] getStdOutOutput() {
         if (filterProcessStdOut != null) {
             return (String[]) filterProcessStdOut.toArray(new String[0]);
         }
         return null;
     }
-    
+
     public String[] getStdErrOutput() {
         if (filterProcessStdErr != null) {
             return (String[]) filterProcessStdErr.toArray(new String[0]);
         }
         return null;
     }
-    
+
     public void destroy() {
         if (filterProcess != null) {
             filterProcess.destroy();
@@ -134,16 +133,18 @@ public class FilterProcess {
             filterProcessStdErr = null;
         }
     }
-    
+
     static class InputStreamReaderThread implements Runnable {
-        private InputStream is;
-        private List<String> output;
-        
+
+        private final InputStream is;
+        private final List<String> output;
+
         InputStreamReaderThread(InputStream is, List<String> output) {
             this.is = is;
             this.output = output;
         }
-        
+
+        @Override
         public void run() {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));

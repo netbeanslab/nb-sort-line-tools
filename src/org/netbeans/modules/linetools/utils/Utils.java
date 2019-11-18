@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2019 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common
@@ -38,60 +38,30 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-package org.netbeans.modules.linetools.actions;
+package org.netbeans.modules.linetools.utils;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import org.netbeans.modules.linetools.utils.Utils;
-import org.openide.util.HelpCtx;
-import org.openide.util.NbBundle;
-import org.openide.util.actions.BooleanStateAction;
+import org.netbeans.api.annotations.common.StaticResource;
 
-/**
- * The action to enable and disble removing of duplicate lines while sorting.
- *
- * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
- */
-public final class RemoveDuplicateLines extends BooleanStateAction implements PropertyChangeListener {
+public final class Utils {
 
-    private RemoveDuplicateLines() {
+    @StaticResource
+    public static final String CLOSE_ICON = "org/netbeans/modules/linetools/resources/close.gif"; // NOI18N
+    @StaticResource
+    public static final String CYCLE_ICON = "org/netbeans/modules/linetools/resources/cycle.gif"; // NOI18N
+    @StaticResource
+    public static final String FILTER_ICON = "org/netbeans/modules/linetools/resources/filter.gif"; // NOI18N
+    @StaticResource
+    public static final String FILTEROUTPUT_ICON = "org/netbeans/modules/linetools/resources/filteroutput.gif"; // NOI18N
+    @StaticResource
+    public static final String MATCHCASE_ICON = "org/netbeans/modules/linetools/resources/matchcase.gif"; // NOI18N
+    @StaticResource
+    public static final String REMOVEDUPLICATELINES_ICON = "org/netbeans/modules/linetools/resources/removeduplicatelines.gif"; // NOI18N
+    @StaticResource
+    public static final String SORTLINESASCENDING_ICON = "org/netbeans/modules/linetools/resources/sortlinesascending.gif"; // NOI18N
+    @StaticResource
+    public static final String SORTLINESDESCENDING_ICON = "org/netbeans/modules/linetools/resources/sortlinesdescending.gif"; // NOI18N
+
+    private Utils() {
     }
 
-    public static RemoveDuplicateLines create() {
-        RemoveDuplicateLines removeDuplicateLines = new RemoveDuplicateLines();
-        removeDuplicateLines.addPropertyChangeListener(removeDuplicateLines);
-        return removeDuplicateLines;
-    }
-
-    @Override
-    protected void initialize() {
-        super.initialize();
-        setBooleanState(LineOperations.isRemoveDuplicateLines());
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PROP_BOOLEAN_STATE)) {
-            LineOperations.setRemoveDuplicateLines(getBooleanState());
-        }
-    }
-
-    @Override
-    public String getName() {
-        return NbBundle.getMessage(RemoveDuplicateLines.class, "CTL_RemoveDuplicateLines"); // NOI18N
-    }
-
-    @Override
-    protected String iconResource() {
-        return Utils.REMOVEDUPLICATELINES_ICON;
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return HelpCtx.DEFAULT_HELP;
-    }
-
-    protected boolean asynchronous() {
-        return false;
-    }
 }

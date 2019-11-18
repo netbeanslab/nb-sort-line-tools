@@ -38,16 +38,15 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.cookies.EditorCookie;
-import org.openide.util.NbBundle;
 
 /**
  *
@@ -59,7 +58,7 @@ import org.openide.util.NbBundle;
         id = "org.netbeans.modules.linetools.actions.SortLinesDescending"
 )
 @ActionRegistration(
-        iconBase = "org/netbeans/modules/linetools/actions/sortlinesdescending.gif",
+        iconBase = Utils.SORTLINESDESCENDING_ICON,
         displayName = "#CTL_SortLinesDescending"
 )
 @ActionReferences({
@@ -72,9 +71,9 @@ public final class SortLinesDescending extends AbstractLineAction {
         super(context);
     }
 
+    @Override
     protected void doLineOperation(JTextComponent textComponent) {
         LineOperations.sortLinesDescending(textComponent);
     }
 
 }
-

@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.awt.Dimension;
@@ -61,24 +60,26 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
-import org.netbeans.editor.Registry;
-import org.netbeans.editor.SideBarFactory;
+import org.netbeans.api.editor.EditorRegistry;
+import org.netbeans.modules.linetools.utils.Utils;
+import org.netbeans.spi.editor.SideBarFactory;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
 
 /**
  * This action installs the Firefox(TM) style Incremental Search Side Bar.
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
-public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
-    private JButton        closeButton;
-    private JLabel         charLabel;
-    private JTextField     charTextField;
-    private JCheckBox      matchCaseCheckBox;
-    private JLabel         matchCaseLabel;
+public final class CharSideBar extends JToolBar implements HelpCtx.Provider {
+
+    private JButton closeButton;
+    private JLabel charLabel;
+    private JTextField charTextField;
+    private final JCheckBox matchCaseCheckBox;
+    private final JLabel matchCaseLabel;
 
     static enum MODE {
         FROM,
@@ -98,14 +99,16 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
                 "loose-focus"); // NOI18N
         getActionMap().put("loose-focus", // NOI18N
                 new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 looseFocus();
             }
         });
 
         closeButton = new JButton(" ",
-                new ImageIcon(Utilities.loadImage("org/netbeans/modules/linetools/actions/close.gif"))); // NOI18N
+                new ImageIcon(ImageUtilities.loadImage(Utils.CLOSE_ICON))); // NOI18N
         closeButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 looseFocus();
             }
@@ -116,9 +119,12 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
 
         // configure incremental search text field
         charTextField = new JTextField(6) {
+            @Override
             public Dimension getMinimumSize() {
                 return getPreferredSize();
             }
+
+            @Override
             public Dimension getMaximumSize() {
                 return getPreferredSize();
             }
@@ -127,11 +133,16 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
 
         // listen on text change
         charTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
             public void changedUpdate(DocumentEvent e) {
             }
+
+            @Override
             public void insertUpdate(DocumentEvent e) {
                 tryCharOperation();
             }
+
+            @Override
             public void removeUpdate(DocumentEvent e) {
                 tryCharOperation();
             }
@@ -153,6 +164,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         });
 
         charTextField.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 String text = charTextField.getText();
                 if (text.length() > 0) {
@@ -166,8 +178,9 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         // configure match case check box
         matchCaseCheckBox = new JCheckBox("", true);
         matchCaseCheckBox.setFocusPainted(false);
-        matchCaseCheckBox.setMargin(new Insets(1,5,1,5));
+        matchCaseCheckBox.setMargin(new Insets(1, 5, 1, 5));
         matchCaseCheckBox.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 charTextField.requestFocusInWindow();
             }
@@ -199,7 +212,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
             if (chars.length() == 1) {
                 doCharOperation(charAt, times);
             } else {
-                charAt = chars.charAt(chars.length() -1);
+                charAt = chars.charAt(chars.length() - 1);
                 chars = chars.substring(0, chars.length() - 1);
                 try {
                     times = Integer.parseInt(chars);
@@ -217,16 +230,16 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         looseFocus();
         switch (mode) {
             case FROM:
-                LineOperations.fromChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.fromChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case AFTER:
-                LineOperations.afterChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.afterChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case UPTO:
-                LineOperations.uptoChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.uptoChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
             case TO:
-                LineOperations.toChar(Registry.getMostActiveComponent(), opChar, matchCaseCheckBox.isSelected(), times);
+                LineOperations.toChar(EditorRegistry.focusedComponent(), opChar, matchCaseCheckBox.isSelected(), times);
                 break;
         }
     }
@@ -239,7 +252,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
 
     private void looseFocus() {
         setVisible(false);
-        JTextComponent textComponent = Registry.getMostActiveComponent();
+        JTextComponent textComponent = EditorRegistry.focusedComponent();
         if (textComponent != null && textComponent.isEnabled()) {
             textComponent.requestFocusInWindow();
         }
@@ -267,6 +280,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         }
     }
 
+    @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx("org.netbeans.modules.linetools..about"); // NOI18N
     }
@@ -275,12 +289,15 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
      * Factory for creating the incremental search sidebar
      */
     public static final class Factory implements SideBarFactory {
+
+        @Override
         public JComponent createSideBar(JTextComponent target) {
             final CharSideBar zapCharSideBar = new CharSideBar();
             target.getInputMap().put(KeyStroke.getKeyStroke("control alt released COMMA"),
                     "char-from"); // NOI18N
             target.getActionMap().put("char-from", // NOI18N
                     new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     zapCharSideBar.setMode(CharSideBar.MODE.FROM);
                     zapCharSideBar.gainFocus();
@@ -290,6 +307,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
                     "char-after"); // NOI18N
             target.getActionMap().put("char-after", // NOI18N
                     new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     zapCharSideBar.setMode(CharSideBar.MODE.AFTER);
                     zapCharSideBar.gainFocus();
@@ -299,6 +317,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
                     "char-upto"); // NOI18N
             target.getActionMap().put("char-upto", // NOI18N
                     new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     zapCharSideBar.setMode(CharSideBar.MODE.UPTO);
                     zapCharSideBar.gainFocus();
@@ -308,6 +327,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
                     "char-to"); // NOI18N
             target.getActionMap().put("char-to", // NOI18N
                     new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     zapCharSideBar.setMode(CharSideBar.MODE.TO);
                     zapCharSideBar.gainFocus();

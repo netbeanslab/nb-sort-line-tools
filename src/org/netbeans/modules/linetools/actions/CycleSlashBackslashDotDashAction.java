@@ -38,12 +38,11 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.cookies.EditorCookie;
 import org.openide.util.NbBundle;
-import org.openide.util.actions.CookieAction;
 
 public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAction {
 
@@ -56,9 +55,10 @@ public final class CycleSlashBackslashDotDashAction extends AbstractCycleLineAct
     }
 
     protected String iconResource() {
-        return "org/netbeans/modules/linetools/actions/cycle.gif"; // NOI18N
+        return Utils.CYCLE_ICON;
     }
 
+    @Override
     protected String getCycleString() {
         return LineOperations.FILE_SEPARATORS_DOT_DASH;
     }

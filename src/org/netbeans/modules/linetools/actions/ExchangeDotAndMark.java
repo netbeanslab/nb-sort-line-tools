@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import javax.swing.text.JTextComponent;
@@ -55,7 +54,7 @@ public class ExchangeDotAndMark extends AbstractLineAction {
     public ExchangeDotAndMark(EditorCookie context) {
         super(context);
     }
-    
+
     public String getName() {
         return NbBundle.getMessage(ExchangeDotAndMark.class, "CTL_ExchangeDotAndMark"); // NOI18N
     }

@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.awt.Toolkit;
@@ -55,7 +54,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.Document;
@@ -75,12 +73,14 @@ import org.openide.windows.InputOutput;
  */
 public class LineOperations {
 
-    public  static final String FILE_SEPARATORS = "/\\";
+    public static final String FILE_SEPARATORS = "/\\";
     private static final String DOT = ".";
     private static final String DASH = "-";
-    public  static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
-    public  static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
-    public  static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
+    public static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
+    public static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
+    public static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
+    private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
+    private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
 
     static void exchangeDotAndMark(JTextComponent textComponent) {
         Caret caret = textComponent.getCaret();
@@ -107,8 +107,9 @@ public class LineOperations {
 
     static final void sortLines(final JTextComponent textComponent, final boolean descending) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
-            
+
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
@@ -158,7 +159,7 @@ public class LineOperations {
                         }
 
                         if (isRemoveDuplicateLines()) {
-                            SortedSet<String> uniqifySet = new TreeSet<String>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
+                            SortedSet<String> uniqifySet = new TreeSet<>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
                             uniqifySet.addAll(Arrays.asList(linesText));
                             linesText = uniqifySet.toArray(new String[0]);
                         }
@@ -193,8 +194,8 @@ public class LineOperations {
 
     private static void runModificationTaskOnDocument(Document doc, Runnable runnable) {
         if (doc instanceof BaseDocument) {
-            ((BaseDocument)doc).runAtomic(runnable);
-        }else{
+            ((BaseDocument) doc).runAtomic(runnable);
+        } else {
             runnable.run();
         }
     }
@@ -206,6 +207,7 @@ public class LineOperations {
 
     /**
      * Getter for property removeDuplicateLines.
+     *
      * @return Value of property removeDuplicateLines.
      */
     static boolean isRemoveDuplicateLines() {
@@ -214,6 +216,7 @@ public class LineOperations {
 
     /**
      * Setter for property removeDuplicateLines.
+     *
      * @param removeDuplicateLines New value of property removeDuplicateLines.
      */
     static void setRemoveDuplicateLines(boolean removeDuplicateLines) {
@@ -224,6 +227,7 @@ public class LineOperations {
 
     /**
      * Return wheather the sorting shoul be done in a case sensitive fashion.
+     *
      * @return
      */
     public static boolean isMatchCase() {
@@ -239,14 +243,11 @@ public class LineOperations {
         LineOperations.matchCase = matchCase;
     }
 
-    private static Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
-    private static Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
-
-
     static void filter(final JTextComponent textComponent) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
 
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
@@ -327,33 +328,34 @@ public class LineOperations {
     static void filterOutput(final JTextComponent textComponent) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Caret caret = textComponent.getCaret();
-                    
+
                     Element rootElement = doc.getDefaultRootElement();
-                    
+
                     int selStart = caret.getDot();
                     int selEnd = caret.getMark();
                     int start = Math.min(selStart, selEnd);
                     int end = Math.max(selStart, selEnd) - 1;
-                    
+
                     int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
                     int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
-                    
+
                     if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1) {
                         // could not get line number or same line
                         beep();
                         return;
                     }
-                    
+
                     NotifyDescriptor.InputLine filterCommand = new NotifyDescriptor.InputLine("Enter Filter command (output sent to Output window):",
                             "Filter command", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
-                    
+
                     if (DialogDisplayer.getDefault().notify(filterCommand) == NotifyDescriptor.OK_OPTION) {
                         int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
                         int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-                        
+
                         try {
                             int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
                             String[] linesText = new String[numberOfLines];
@@ -362,13 +364,13 @@ public class LineOperations {
                                 Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
                                 int lineStartOffset = lineElement.getStartOffset();
                                 int lineEndOffset = lineElement.getEndOffset();
-                                
+
                                 linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset - 1));
                             }
-                            
+
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
-                                
+
                                 PrintWriter in = filterProcess.exec();
                                 for (int i = 0; i < linesText.length; i++) {
                                     in.println(linesText[i]);
@@ -402,7 +404,7 @@ public class LineOperations {
                 }
             };
             runModificationTaskOnDocument(textComponent.getDocument(), runnable);
-                
+
         } else {
             beep();
         }
@@ -411,6 +413,7 @@ public class LineOperations {
     static final void fromChar(final JTextComponent textComponent, final char fromChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -431,7 +434,7 @@ public class LineOperations {
 
                             char lowercaseFromChar = Character.toLowerCase(fromChar);
                             int textLength = text.length();
-                            int timesCounter=times;
+                            int timesCounter = times;
                             for (int i = textLength - 1; i >= 0; i--) {
                                 char charAt = text.charAt(i);
                                 if (charAt == fromChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseFromChar)) {
@@ -457,6 +460,7 @@ public class LineOperations {
     static final void afterChar(final JTextComponent textComponent, final char afterChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -500,9 +504,10 @@ public class LineOperations {
         }
     }
 
-    static final void uptoChar(final JTextComponent textComponent, final  char uptoChar, final boolean matchCase, final int times) {
+    static final void uptoChar(final JTextComponent textComponent, final char uptoChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
                     Element rootElement = doc.getDefaultRootElement();
@@ -550,6 +555,7 @@ public class LineOperations {
     static final void toChar(final JTextComponent textComponent, final char toChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
 
@@ -597,6 +603,7 @@ public class LineOperations {
     static final void cycle(final JTextComponent textComponent, final String cycleString) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     Document doc = textComponent.getDocument();
 
@@ -683,7 +690,7 @@ public class LineOperations {
         }
 
         Set<Character> cycleSet = getCharSet(cycleChars);
-        if (cycleSet.size() <= 1){
+        if (cycleSet.size() <= 1) {
             return target;
         }
 
@@ -694,14 +701,14 @@ public class LineOperations {
                 return target;
             case 1:
                 char from = set.iterator().next();
-                List<Character> cycleList = new ArrayList<Character>(cycleSet);
-                char to = cycleList.get((cycleList.indexOf(from) + 1)%cycleList.size());
-                return target.replace(from,to);
+                List<Character> cycleList = new ArrayList<>(cycleSet);
+                char to = cycleList.get((cycleList.indexOf(from) + 1) % cycleList.size());
+                return target.replace(from, to);
             default:
                 char first = set.iterator().next();
                 cycleSet.remove(first);
                 Iterator<Character> cycleSetIterator = cycleSet.iterator();
-                while(cycleSetIterator.hasNext()) {
+                while (cycleSetIterator.hasNext()) {
                     target = target.replace(cycleSetIterator.next(), first);
                 }
                 return target;
@@ -714,11 +721,11 @@ public class LineOperations {
         }
 
         if (target.length() == 0) {
-            return new LinkedHashSet<Character>();
+            return new LinkedHashSet<>();
         }
 
         if (target.length() == 1) {
-            return new LinkedHashSet<Character>(Collections.<Character>singleton(target.charAt(0)));
+            return new LinkedHashSet<>(Collections.<Character>singleton(target.charAt(0)));
         }
 
         char[] targetarray = target.toCharArray();
@@ -727,7 +734,7 @@ public class LineOperations {
             targetArray[i] = targetarray[i];
         }
 
-        Set<Character> targetCharsSet = new LinkedHashSet<Character>(Arrays.<Character>asList(targetArray));
+        Set<Character> targetCharsSet = new LinkedHashSet<>(Arrays.<Character>asList(targetArray));
 
         return targetCharsSet;
     }

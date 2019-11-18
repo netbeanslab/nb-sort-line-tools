@@ -3,5 +3,5 @@ OpenIDE-Module: org.netbeans.modules.linetools/1
 OpenIDE-Module-Layer: org/netbeans/modules/linetools/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/netbeans/modules/linetools/Bundle.properties
 OpenIDE-Module-Requires: org.netbeans.api.javahelp.Help
-OpenIDE-Module-Specification-Version: 1.21
+OpenIDE-Module-Specification-Version: 1.22
 

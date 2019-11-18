@@ -38,11 +38,11 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import org.netbeans.modules.linetools.utils.Utils;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.BooleanStateAction;
@@ -55,29 +55,39 @@ import org.openide.util.actions.BooleanStateAction;
  */
 public final class MatchCase extends BooleanStateAction implements PropertyChangeListener {
 
-    public MatchCase() {
-        addPropertyChangeListener(this);
+    private MatchCase() {
     }
 
+    public static MatchCase create() {
+        MatchCase matchCase = new MatchCase();
+        matchCase.addPropertyChangeListener(matchCase);
+        return matchCase;
+    }
+
+    @Override
     protected void initialize() {
         super.initialize();
         setBooleanState(LineOperations.isMatchCase());
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(PROP_BOOLEAN_STATE)) {
             LineOperations.setMatchCase(getBooleanState());
         }
     }
 
+    @Override
     public String getName() {
         return NbBundle.getMessage(RemoveDuplicateLines.class, "CTL_MatchCase"); // NOI18N
     }
 
+    @Override
     protected String iconResource() {
-        return "org/netbeans/modules/linetools/actions/matchcase.gif"; // NOI18N
+        return Utils.MATCHCASE_ICON;
     }
 
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }
