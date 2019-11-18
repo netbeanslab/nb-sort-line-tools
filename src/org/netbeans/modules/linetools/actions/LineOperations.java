@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.awt.Toolkit;
@@ -74,12 +73,14 @@ import org.openide.windows.InputOutput;
  */
 public class LineOperations {
 
-    public  static final String FILE_SEPARATORS = "/\\";
+    public static final String FILE_SEPARATORS = "/\\";
     private static final String DOT = ".";
     private static final String DASH = "-";
-    public  static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
-    public  static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
-    public  static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
+    public static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
+    public static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
+    public static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
+    private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
+    private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
 
     static void exchangeDotAndMark(JTextComponent textComponent) {
         Caret caret = textComponent.getCaret();
@@ -193,8 +194,8 @@ public class LineOperations {
 
     private static void runModificationTaskOnDocument(Document doc, Runnable runnable) {
         if (doc instanceof BaseDocument) {
-            ((BaseDocument)doc).runAtomic(runnable);
-        }else{
+            ((BaseDocument) doc).runAtomic(runnable);
+        } else {
             runnable.run();
         }
     }
@@ -206,6 +207,7 @@ public class LineOperations {
 
     /**
      * Getter for property removeDuplicateLines.
+     *
      * @return Value of property removeDuplicateLines.
      */
     static boolean isRemoveDuplicateLines() {
@@ -214,6 +216,7 @@ public class LineOperations {
 
     /**
      * Setter for property removeDuplicateLines.
+     *
      * @param removeDuplicateLines New value of property removeDuplicateLines.
      */
     static void setRemoveDuplicateLines(boolean removeDuplicateLines) {
@@ -224,6 +227,7 @@ public class LineOperations {
 
     /**
      * Return wheather the sorting shoul be done in a case sensitive fashion.
+     *
      * @return
      */
     public static boolean isMatchCase() {
@@ -238,10 +242,6 @@ public class LineOperations {
     public static void setMatchCase(boolean matchCase) {
         LineOperations.matchCase = matchCase;
     }
-
-    private static Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
-    private static Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
-
 
     static void filter(final JTextComponent textComponent) {
         if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
@@ -434,7 +434,7 @@ public class LineOperations {
 
                             char lowercaseFromChar = Character.toLowerCase(fromChar);
                             int textLength = text.length();
-                            int timesCounter=times;
+                            int timesCounter = times;
                             for (int i = textLength - 1; i >= 0; i--) {
                                 char charAt = text.charAt(i);
                                 if (charAt == fromChar || (!matchCase && Character.toLowerCase(charAt) == lowercaseFromChar)) {
@@ -504,7 +504,7 @@ public class LineOperations {
         }
     }
 
-    static final void uptoChar(final JTextComponent textComponent, final  char uptoChar, final boolean matchCase, final int times) {
+    static final void uptoChar(final JTextComponent textComponent, final char uptoChar, final boolean matchCase, final int times) {
         if (textComponent.isEditable()) {
             Runnable runnable = new Runnable() {
                 @Override
@@ -690,7 +690,7 @@ public class LineOperations {
         }
 
         Set<Character> cycleSet = getCharSet(cycleChars);
-        if (cycleSet.size() <= 1){
+        if (cycleSet.size() <= 1) {
             return target;
         }
 
@@ -702,13 +702,13 @@ public class LineOperations {
             case 1:
                 char from = set.iterator().next();
                 List<Character> cycleList = new ArrayList<>(cycleSet);
-                char to = cycleList.get((cycleList.indexOf(from) + 1)%cycleList.size());
-                return target.replace(from,to);
+                char to = cycleList.get((cycleList.indexOf(from) + 1) % cycleList.size());
+                return target.replace(from, to);
             default:
                 char first = set.iterator().next();
                 cycleSet.remove(first);
                 Iterator<Character> cycleSetIterator = cycleSet.iterator();
-                while(cycleSetIterator.hasNext()) {
+                while (cycleSetIterator.hasNext()) {
                     target = target.replace(cycleSetIterator.next(), first);
                 }
                 return target;

@@ -8,10 +8,12 @@
             </file>           -->
             <file name="org-netbeans-modules-linetools-actions-MatchCase.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.MatchCase"/>
+                <attr name="instanceCreate" methodvalue="org.netbeans.modules.linetools.actions.MatchCase.create"/>
                 <attr intvalue="0" name="position"/>
             </file>
             <file name="org-netbeans-modules-linetools-actions-RemoveDuplicateLines.instance">
                 <attr name="instanceClass" stringvalue="org.netbeans.modules.linetools.actions.RemoveDuplicateLines"/>
+                <attr name="instanceCreate" methodvalue="org.netbeans.modules.linetools.actions.RemoveDuplicateLines.create"/>
                 <attr intvalue="10" name="position"/>
             </file>
 <!--            <file name="org-netbeans-modules-linetools-actions-Filter.instance">

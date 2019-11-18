@@ -55,8 +55,13 @@ import org.openide.util.actions.BooleanStateAction;
  */
 public final class RemoveDuplicateLines extends BooleanStateAction implements PropertyChangeListener {
 
-    public RemoveDuplicateLines() {
-        addPropertyChangeListener(this);
+    private RemoveDuplicateLines() {
+    }
+
+    public static RemoveDuplicateLines create() {
+        RemoveDuplicateLines removeDuplicateLines = new RemoveDuplicateLines();
+        removeDuplicateLines.addPropertyChangeListener(removeDuplicateLines);
+        return removeDuplicateLines;
     }
 
     @Override

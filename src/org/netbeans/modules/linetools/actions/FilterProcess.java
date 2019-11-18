@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.io.BufferedReader;
@@ -83,16 +82,16 @@ public class FilterProcess {
         filterProcessStdOut = new ArrayList<>();
         Thread filterProcessStdOutReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getInputStream(),
-                    filterProcessStdOut),
-                    filterCommand[0] + ":STDOUT Reader"); // NOI18N
+                        filterProcessStdOut),
+                filterCommand[0] + ":STDOUT Reader"); // NOI18N
         filterProcessStdOutReader.start();
 
         // Setup STDERR Reading
         filterProcessStdErr = new ArrayList<>(expectedNumberOfOutputLines);
         Thread filterProcessStdErrReader = new Thread(
                 new InputStreamReaderThread(filterProcess.getErrorStream(),
-                    filterProcessStdErr),
-                    filterCommand[0] + ":STDERR Reader"); // NOI18N
+                        filterProcessStdErr),
+                filterCommand[0] + ":STDERR Reader"); // NOI18N
         filterProcessStdErrReader.start();
 
         printWriter = new PrintWriter(filterProcess.getOutputStream());
@@ -136,8 +135,9 @@ public class FilterProcess {
     }
 
     static class InputStreamReaderThread implements Runnable {
-        private InputStream is;
-        private List<String> output;
+
+        private final InputStream is;
+        private final List<String> output;
 
         InputStreamReaderThread(InputStream is, List<String> output) {
             this.is = is;

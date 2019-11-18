@@ -38,7 +38,6 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-
 package org.netbeans.modules.linetools.actions;
 
 import java.awt.Dimension;
@@ -74,12 +73,13 @@ import org.openide.util.NbBundle;
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
-public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
-    private JButton        closeButton;
-    private JLabel         charLabel;
-    private JTextField     charTextField;
-    private JCheckBox      matchCaseCheckBox;
-    private JLabel         matchCaseLabel;
+public final class CharSideBar extends JToolBar implements HelpCtx.Provider {
+
+    private JButton closeButton;
+    private JLabel charLabel;
+    private JTextField charTextField;
+    private final JCheckBox matchCaseCheckBox;
+    private final JLabel matchCaseLabel;
 
     static enum MODE {
         FROM,
@@ -123,6 +123,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
             public Dimension getMinimumSize() {
                 return getPreferredSize();
             }
+
             @Override
             public Dimension getMaximumSize() {
                 return getPreferredSize();
@@ -135,10 +136,12 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
+
             @Override
             public void insertUpdate(DocumentEvent e) {
                 tryCharOperation();
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 tryCharOperation();
@@ -175,7 +178,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
         // configure match case check box
         matchCaseCheckBox = new JCheckBox("", true);
         matchCaseCheckBox.setFocusPainted(false);
-        matchCaseCheckBox.setMargin(new Insets(1,5,1,5));
+        matchCaseCheckBox.setMargin(new Insets(1, 5, 1, 5));
         matchCaseCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -209,7 +212,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
             if (chars.length() == 1) {
                 doCharOperation(charAt, times);
             } else {
-                charAt = chars.charAt(chars.length() -1);
+                charAt = chars.charAt(chars.length() - 1);
                 chars = chars.substring(0, chars.length() - 1);
                 try {
                     times = Integer.parseInt(chars);
@@ -286,6 +289,7 @@ public final class CharSideBar extends JToolBar implements HelpCtx.Provider  {
      * Factory for creating the incremental search sidebar
      */
     public static final class Factory implements SideBarFactory {
+
         @Override
         public JComponent createSideBar(JTextComponent target) {
             final CharSideBar zapCharSideBar = new CharSideBar();

@@ -56,8 +56,13 @@ import org.openide.util.actions.BooleanStateAction;
  */
 public final class MatchCase extends BooleanStateAction implements PropertyChangeListener {
 
-    public MatchCase() {
-        addPropertyChangeListener(this);
+    private MatchCase() {
+    }
+
+    public static MatchCase create() {
+        MatchCase matchCase = new MatchCase();
+        matchCase.addPropertyChangeListener(matchCase);
+        return matchCase;
     }
 
     @Override
