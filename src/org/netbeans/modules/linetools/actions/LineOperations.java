@@ -71,7 +71,7 @@ import org.openide.windows.InputOutput;
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  * @author markiewb@netbeans.org (applied fixes)
  */
-public class LineOperations {
+public final class LineOperations {
 
     public static final String FILE_SEPARATORS = "/\\"; // NOI18N
     private static final String DOT = "."; // NOI18N
@@ -81,6 +81,9 @@ public class LineOperations {
     public static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
     private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
     private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
+
+    private LineOperations() {
+    }
 
     static void exchangeDotAndMark(JTextComponent textComponent) {
         Caret caret = textComponent.getCaret();
