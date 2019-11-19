@@ -73,9 +73,9 @@ import org.openide.windows.InputOutput;
  */
 public class LineOperations {
 
-    public static final String FILE_SEPARATORS = "/\\";
-    private static final String DOT = ".";
-    private static final String DASH = "-";
+    public static final String FILE_SEPARATORS = "/\\"; // NOI18N
+    private static final String DOT = "."; // NOI18N
+    private static final String DASH = "-"; // NOI18N
     public static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
     public static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
     public static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
@@ -170,9 +170,9 @@ public class LineOperations {
                             Arrays.sort(linesText, comparator);
                         }
 
-                        StringBuffer sb = new StringBuffer();
-                        for (int i = 0; i < linesText.length; i++) {
-                            sb.append(linesText[i]);
+                        StringBuilder sb = new StringBuilder();
+                        for (String line : linesText) {
+                            sb.append(line);
                         }
 
                         // remove the lines
@@ -289,17 +289,17 @@ public class LineOperations {
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
 
-                                PrintWriter in = filterProcess.exec();
-                                for (int i = 0; i < linesText.length; i++) {
-                                    in.println(linesText[i]);
+                                try (PrintWriter in = filterProcess.exec()) {
+                                    for (String line : linesText) {
+                                        in.println(line);
+                                    }
                                 }
-                                in.close();
                                 if (filterProcess.waitFor() == 0) {
                                     linesText = filterProcess.getStdOutOutput();
                                     if (linesText != null) {
-                                        StringBuffer sb = new StringBuffer();
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            sb.append(linesText[i] + "\n");
+                                        StringBuilder sb = new StringBuilder();
+                                        for (String line : linesText) {
+                                            sb.append(line).append("\n"); // NOI18N
                                         }
 
                                         // remove the lines
@@ -371,25 +371,27 @@ public class LineOperations {
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
 
-                                PrintWriter in = filterProcess.exec();
-                                for (int i = 0; i < linesText.length; i++) {
-                                    in.println(linesText[i]);
+                                try (PrintWriter in = filterProcess.exec()) {
+                                    for (String line : linesText) {
+                                        in.println(line);
+                                    }
                                 }
-                                in.close();
                                 if (filterProcess.waitFor() == 0) {
                                     InputOutput io = IOProvider.getDefault().getIO(filterCommand.getInputText(), true);
                                     linesText = filterProcess.getStdOutOutput();
                                     if (linesText != null) {
-                                        PrintWriter pw = new PrintWriter(io.getOut());
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            pw.println(linesText[i]);
+                                        try (PrintWriter pw = new PrintWriter(io.getOut())) {
+                                            for (String line : linesText) {
+                                                pw.println(line);
+                                            }
                                         }
                                     }
                                     linesText = filterProcess.getStdErrOutput();
                                     if (linesText != null) {
-                                        PrintWriter pw = new PrintWriter(io.getErr());
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            pw.println(linesText[i]);
+                                        try (PrintWriter pw = new PrintWriter(io.getErr())) {
+                                            for (String line : linesText) {
+                                                pw.println(line);
+                                            }
                                         }
                                     }
                                 }
