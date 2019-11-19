@@ -82,6 +82,9 @@ public final class LineOperations {
     private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
     private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
 
+    private static boolean removeDuplicateLines;
+    private static boolean matchCase = true;
+
     private LineOperations() {
     }
 
@@ -204,11 +207,6 @@ public final class LineOperations {
     }
 
     /**
-     * Holds value of property removeDuplicateLines.
-     */
-    private static boolean removeDuplicateLines;
-
-    /**
      * Getter for property removeDuplicateLines.
      *
      * @return Value of property removeDuplicateLines.
@@ -225,8 +223,6 @@ public final class LineOperations {
     static void setRemoveDuplicateLines(boolean removeDuplicateLines) {
         LineOperations.removeDuplicateLines = removeDuplicateLines;
     }
-
-    private static boolean matchCase = true;
 
     /**
      * Return wheather the sorting shoul be done in a case sensitive fashion.
