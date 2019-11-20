@@ -59,6 +59,7 @@ import javax.swing.text.Caret;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
+import org.netbeans.api.annotations.common.CheckForNull;
 import org.netbeans.editor.BaseDocument;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -150,19 +151,7 @@ public final class LineOperations {
                             linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
                         }
 
-                        Comparator<String> comparator = null;
-                        if (descending) {
-                            if (matchCase) {
-                                comparator = REVERSE_STRING_COMPARATOR;
-                            } else {
-                                comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
-                            }
-                        } else {
-                            if (matchCase) {
-                            } else {
-                                comparator = String.CASE_INSENSITIVE_ORDER;
-                            }
-                        }
+                        Comparator<String> comparator = getComparator(descending, matchCase);
 
                         if (isRemoveDuplicateLines()) {
                             SortedSet<String> uniqifySet = new TreeSet<>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
@@ -196,6 +185,24 @@ public final class LineOperations {
         } else {
             beep();
         }
+    }
+
+    @CheckForNull
+    private static Comparator<String> getComparator(boolean descending, boolean matchCase) {
+        Comparator<String> comparator = null;
+        if (descending) {
+            if (matchCase) {
+                comparator = REVERSE_STRING_COMPARATOR;
+            } else {
+                comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
+            }
+        } else {
+            if (matchCase) {
+            } else {
+                comparator = String.CASE_INSENSITIVE_ORDER;
+            }
+        }
+        return comparator;
     }
 
     private static void runModificationTaskOnDocument(Document doc, Runnable runnable) {
