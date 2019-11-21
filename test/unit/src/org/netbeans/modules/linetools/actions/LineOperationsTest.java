@@ -72,6 +72,7 @@ public class LineOperationsTest extends NbTestCase {
     @BeforeEach
     @Override
     public void setUp() {
+        LineOperations.setRemoveDuplicateLines(false);
     }
 
     @AfterEach
@@ -114,6 +115,42 @@ public class LineOperationsTest extends NbTestCase {
                 + "c\n"
                 + "b\n"
                 + "a\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testRemoveDuplicateLines_01() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        String text = ""
+                + "aaa\n"
+                + "aaa\n"
+                + "y\n"
+                + "aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "aaa\n"
+                + "x\n"
+                + "y\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
+    public void testRemoveDuplicateLines_02() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        String text = ""
+                + "aaa\n"
+                + "aaa\n"
+                + "y\n"
+                + "aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "z\n"
+                + "y\n"
+                + "x\n"
+                + "aaa\n";
         testSortLinesDesc(text, expected);
     }
 
