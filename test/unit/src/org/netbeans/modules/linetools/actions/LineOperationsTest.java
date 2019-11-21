@@ -98,6 +98,28 @@ public class LineOperationsTest extends NbTestCase {
         testSortLinesAsc(text, expected);
     }
 
+    public void testSortLinesAscending_02() throws Exception {
+        String text = ""
+                + "z\n"
+                + "c\n"
+                + "y\n"
+                + "x\n"
+                + "z\n"
+                + "b\n"
+                + "c\n"
+                + "a\n";
+        String expected = ""
+                + "a\n"
+                + "b\n"
+                + "c\n"
+                + "c\n"
+                + "x\n"
+                + "y\n"
+                + "z\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
     public void testSortLinesDescending_01() throws Exception {
         String text = ""
                 + "a\n"
@@ -116,7 +138,29 @@ public class LineOperationsTest extends NbTestCase {
         testSortLinesDesc(text, expected);
     }
 
-    public void testRemoveDuplicateLines_01() throws Exception {
+    public void testSortLinesDescending_02() throws Exception {
+        String text = ""
+                + "y\n"
+                + "a\n"
+                + "b\n"
+                + "c\n"
+                + "a\n"
+                + "x\n"
+                + "y\n"
+                + "z\n";
+        String expected = ""
+                + "z\n"
+                + "y\n"
+                + "y\n"
+                + "x\n"
+                + "c\n"
+                + "b\n"
+                + "a\n"
+                + "a\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testRemoveDuplicateLinesAsc_01() throws Exception {
         LineOperations.setRemoveDuplicateLines(true);
         String text = ""
                 + "aaa\n"
@@ -134,7 +178,48 @@ public class LineOperationsTest extends NbTestCase {
         testSortLinesAsc(text, expected);
     }
 
-    public void testRemoveDuplicateLines_02() throws Exception {
+    public void testRemoveDuplicateLinesAsc_02() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        String text = ""
+                + "aaa\n"
+                + "AAA\n"
+                + "y\n"
+                + "Aaa\n"
+                + "Aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "aaa\n"
+                + "x\n"
+                + "y\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
+    public void testRemoveDuplicateLinesAsc_03() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        LineOperations.setMatchCase(true);
+        String text = ""
+                + "aaa\n"
+                + "AAA\n"
+                + "y\n"
+                + "Aaa\n"
+                + "Aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "AAA\n"
+                + "Aaa\n"
+                + "aaa\n"
+                + "x\n"
+                + "y\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
+    public void testRemoveDuplicateLinesDesc_01() throws Exception {
         LineOperations.setRemoveDuplicateLines(true);
         String text = ""
                 + "aaa\n"
@@ -149,6 +234,47 @@ public class LineOperationsTest extends NbTestCase {
                 + "y\n"
                 + "x\n"
                 + "aaa\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testRemoveDuplicateLinesDesc_02() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        String text = ""
+                + "aaa\n"
+                + "AAA\n"
+                + "y\n"
+                + "Aaa\n"
+                + "Aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "z\n"
+                + "y\n"
+                + "x\n"
+                + "aaa\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testRemoveDuplicateLinesDesc_03() throws Exception {
+        LineOperations.setRemoveDuplicateLines(true);
+        LineOperations.setMatchCase(true);
+        String text = ""
+                + "aaa\n"
+                + "AAA\n"
+                + "y\n"
+                + "Aaa\n"
+                + "Aaa\n"
+                + "x\n"
+                + "aaa\n"
+                + "z\n";
+        String expected = ""
+                + "z\n"
+                + "y\n"
+                + "x\n"
+                + "aaa\n"
+                + "Aaa\n"
+                + "AAA\n";
         testSortLinesDesc(text, expected);
     }
 
