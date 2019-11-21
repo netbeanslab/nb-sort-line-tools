@@ -84,8 +84,8 @@ public final class LineOperations {
     private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
     private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
 
-    private static boolean removeDuplicateLines;
-    private static boolean matchCase = true;
+    private static volatile boolean removeDuplicateLines;
+    private static volatile boolean matchCase = true;
 
     private LineOperations() {
     }
