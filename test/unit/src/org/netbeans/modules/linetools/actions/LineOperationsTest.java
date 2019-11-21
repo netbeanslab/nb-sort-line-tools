@@ -46,7 +46,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.junit.NbTestCase;
 
@@ -73,6 +72,7 @@ public class LineOperationsTest extends NbTestCase {
     @Override
     public void setUp() {
         LineOperations.setRemoveDuplicateLines(false);
+        LineOperations.setMatchCase(false);
     }
 
     @AfterEach
@@ -80,7 +80,6 @@ public class LineOperationsTest extends NbTestCase {
     public void tearDown() {
     }
 
-    @Test
     public void testSortLinesAscending_01() throws Exception {
         String text = ""
                 + "z\n"
@@ -99,7 +98,6 @@ public class LineOperationsTest extends NbTestCase {
         testSortLinesAsc(text, expected);
     }
 
-    @Test
     public void testSortLinesDescending_01() throws Exception {
         String text = ""
                 + "a\n"
@@ -151,6 +149,128 @@ public class LineOperationsTest extends NbTestCase {
                 + "y\n"
                 + "x\n"
                 + "aaa\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testSortLinesAscendingMatchCase_01() throws Exception {
+        LineOperations.setMatchCase(true);
+        String text = ""
+                + "Z\n"
+                + "y\n"
+                + "X\n"
+                + "b\n"
+                + "c\n"
+                + "A\n"
+                + "z\n"
+                + "Y\n"
+                + "x\n"
+                + "B\n"
+                + "C\n"
+                + "a\n";
+        String expected = ""
+                + "A\n"
+                + "B\n"
+                + "C\n"
+                + "X\n"
+                + "Y\n"
+                + "Z\n"
+                + "a\n"
+                + "b\n"
+                + "c\n"
+                + "x\n"
+                + "y\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
+    public void testSortLinesAscendingNotMatchCase_01() throws Exception {
+        String text = ""
+                + "Z\n"
+                + "y\n"
+                + "X\n"
+                + "b\n"
+                + "c\n"
+                + "A\n"
+                + "z\n"
+                + "Y\n"
+                + "x\n"
+                + "B\n"
+                + "C\n"
+                + "a\n";
+        String expected = ""
+                + "A\n"
+                + "a\n"
+                + "b\n"
+                + "B\n"
+                + "c\n"
+                + "C\n"
+                + "X\n"
+                + "x\n"
+                + "y\n"
+                + "Y\n"
+                + "Z\n"
+                + "z\n";
+        testSortLinesAsc(text, expected);
+    }
+
+    public void testSortLinesDescendingMatchCase_01() throws Exception {
+        LineOperations.setMatchCase(true);
+        String text = ""
+                + "Z\n"
+                + "y\n"
+                + "X\n"
+                + "b\n"
+                + "c\n"
+                + "A\n"
+                + "z\n"
+                + "Y\n"
+                + "x\n"
+                + "B\n"
+                + "C\n"
+                + "a\n";
+        String expected = ""
+                + "z\n"
+                + "y\n"
+                + "x\n"
+                + "c\n"
+                + "b\n"
+                + "a\n"
+                + "Z\n"
+                + "Y\n"
+                + "X\n"
+                + "C\n"
+                + "B\n"
+                + "A\n";
+        testSortLinesDesc(text, expected);
+    }
+
+    public void testSortLinesDescendingNotMatchCase_01() throws Exception {
+        String text = ""
+                + "Z\n"
+                + "y\n"
+                + "X\n"
+                + "b\n"
+                + "c\n"
+                + "A\n"
+                + "z\n"
+                + "Y\n"
+                + "x\n"
+                + "B\n"
+                + "C\n"
+                + "a\n";
+        String expected = ""
+                + "Z\n"
+                + "z\n"
+                + "y\n"
+                + "Y\n"
+                + "X\n"
+                + "x\n"
+                + "c\n"
+                + "C\n"
+                + "b\n"
+                + "B\n"
+                + "A\n"
+                + "a\n";
         testSortLinesDesc(text, expected);
     }
 
