@@ -31,7 +31,7 @@ Original sourcecode can be found at http://hg.netbeans.org/main/contrib/file/tip
 
 ## Note
 
-- `Case sensitive` and `Remove Duplicate lines` options don't work in NetBeans 11.0 and 11.1 because the bug of NetBeans
+- `Case sensitive` and `Remove Duplicate lines` options don't work in NetBeans 11.0 and 11.1 because of the bug of NetBeans
 
 ## License
 
