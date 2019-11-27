@@ -17,7 +17,7 @@ You can also assign shortcuts to these actions.
 - https://github.com/netbeanslabo/nb-sort-line-tools/releases
 - http://plugins.netbeans.org/plugin/45925
 
-## Further information:
+## Further information
 
 This plugin is based on the _"Line Tools"_ plugin from _sandipchitale_ @ (http://plugins.netbeans.org/plugin/3857/line-tools)
 It is mainly a repackaging to be compatible with NetBeans 7.x.
@@ -28,6 +28,10 @@ Original sourcecode can be found at http://hg.netbeans.org/main/contrib/file/tip
 ## Requirements
 
 - NetBeans 11.0 and higher
+
+## Note
+
+- `Case sensitive` and `Remove Duplicate lines` options don't work in NetBeans 11.0 and 11.1 because of the bug of NetBeans
 
 ## License
 

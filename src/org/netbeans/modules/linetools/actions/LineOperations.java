@@ -59,7 +59,9 @@ import javax.swing.text.Caret;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
+import org.netbeans.api.annotations.common.CheckForNull;
 import org.netbeans.editor.BaseDocument;
+import org.netbeans.modules.csl.api.OffsetRange;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
@@ -71,16 +73,22 @@ import org.openide.windows.InputOutput;
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  * @author markiewb@netbeans.org (applied fixes)
  */
-public class LineOperations {
+public final class LineOperations {
 
-    public static final String FILE_SEPARATORS = "/\\";
-    private static final String DOT = ".";
-    private static final String DASH = "-";
+    public static final String FILE_SEPARATORS = "/\\"; // NOI18N
+    private static final String DOT = "."; // NOI18N
+    private static final String DASH = "-"; // NOI18N
     public static final String FILE_SEPARATOR_DOT = File.separatorChar + DOT;
     public static final String FILE_SEPARATOR_DOT_DASH = FILE_SEPARATOR_DOT + DASH;
     public static final String FILE_SEPARATORS_DOT_DASH = FILE_SEPARATORS + DOT + DASH;
     private static final Comparator<String> REVERSE_STRING_COMPARATOR = Collections.reverseOrder();
     private static final Comparator<String> REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE = Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER);
+
+    private static volatile boolean removeDuplicateLines;
+    private static volatile boolean matchCase = true;
+
+    private LineOperations() {
+    }
 
     static void exchangeDotAndMark(JTextComponent textComponent) {
         Caret caret = textComponent.getCaret();
@@ -106,90 +114,11 @@ public class LineOperations {
     }
 
     static final void sortLines(final JTextComponent textComponent, final boolean descending) {
-        if (textComponent.isEditable() && textComponent.getCaret().isSelectionVisible()) {
-
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    Document doc = textComponent.getDocument();
-                    Caret caret = textComponent.getCaret();
-                    Element rootElement = doc.getDefaultRootElement();
-
-                    int selStart = caret.getDot();
-                    int selEnd = caret.getMark();
-                    int start = Math.min(selStart, selEnd);
-                    int end = Math.max(selStart, selEnd) - 1;
-
-                    int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
-                    int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
-
-                    if (zeroBaseStartLineNumber == -1 || zeroBaseEndLineNumber == -1 || (zeroBaseStartLineNumber == zeroBaseEndLineNumber)) {
-                        // could not get line number or same line
-                        beep();
-                        return;
-                    }
-
-                    int startOffset = rootElement.getElement(zeroBaseStartLineNumber).getStartOffset();
-                    int endOffset = rootElement.getElement(zeroBaseEndLineNumber).getEndOffset();
-
-                    try {
-                        int numberOfLines = zeroBaseEndLineNumber - zeroBaseStartLineNumber + 1;
-                        String[] linesText = new String[numberOfLines];
-                        for (int i = 0; i < numberOfLines; i++) {
-                            // get line text
-                            Element lineElement = rootElement.getElement(zeroBaseStartLineNumber + i);
-                            int lineStartOffset = lineElement.getStartOffset();
-                            int lineEndOffset = lineElement.getEndOffset();
-
-                            linesText[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
-                        }
-
-                        Comparator<String> comparator = null;
-                        if (descending) {
-                            if (matchCase) {
-                                comparator = REVERSE_STRING_COMPARATOR;
-                            } else {
-                                comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
-                            }
-                        } else {
-                            if (matchCase) {
-                            } else {
-                                comparator = String.CASE_INSENSITIVE_ORDER;
-                            }
-                        }
-
-                        if (isRemoveDuplicateLines()) {
-                            SortedSet<String> uniqifySet = new TreeSet<>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
-                            uniqifySet.addAll(Arrays.asList(linesText));
-                            linesText = uniqifySet.toArray(new String[0]);
-                        }
-
-                        if (comparator == null) {
-                            Arrays.sort(linesText);
-                        } else {
-                            Arrays.sort(linesText, comparator);
-                        }
-
-                        StringBuffer sb = new StringBuffer();
-                        for (int i = 0; i < linesText.length; i++) {
-                            sb.append(linesText[i]);
-                        }
-
-                        // remove the lines
-                        doc.remove(startOffset, Math.min(doc.getLength(), endOffset) - startOffset);
-
-                        // insert the sorted text
-                        doc.insertString(startOffset, sb.toString(), null);
-
-                    } catch (BadLocationException ex) {
-                        ErrorManager.getDefault().notify(ex);
-                    }
-                }
-            };
-            runModificationTaskOnDocument(textComponent.getDocument(), runnable);
-        } else {
+        if (!textComponent.isEditable() || !textComponent.getCaret().isSelectionVisible()) {
             beep();
+            return;
         }
+        runModificationTaskOnDocument(textComponent.getDocument(), new SortLinesTask(textComponent, descending, matchCase));
     }
 
     private static void runModificationTaskOnDocument(Document doc, Runnable runnable) {
@@ -199,11 +128,6 @@ public class LineOperations {
             runnable.run();
         }
     }
-
-    /**
-     * Holds value of property removeDuplicateLines.
-     */
-    private static boolean removeDuplicateLines;
 
     /**
      * Getter for property removeDuplicateLines.
@@ -222,8 +146,6 @@ public class LineOperations {
     static void setRemoveDuplicateLines(boolean removeDuplicateLines) {
         LineOperations.removeDuplicateLines = removeDuplicateLines;
     }
-
-    private static boolean matchCase = true;
 
     /**
      * Return wheather the sorting shoul be done in a case sensitive fashion.
@@ -289,17 +211,17 @@ public class LineOperations {
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
 
-                                PrintWriter in = filterProcess.exec();
-                                for (int i = 0; i < linesText.length; i++) {
-                                    in.println(linesText[i]);
+                                try (PrintWriter in = filterProcess.exec()) {
+                                    for (String line : linesText) {
+                                        in.println(line);
+                                    }
                                 }
-                                in.close();
                                 if (filterProcess.waitFor() == 0) {
                                     linesText = filterProcess.getStdOutOutput();
                                     if (linesText != null) {
-                                        StringBuffer sb = new StringBuffer();
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            sb.append(linesText[i] + "\n");
+                                        StringBuilder sb = new StringBuilder();
+                                        for (String line : linesText) {
+                                            sb.append(line).append("\n"); // NOI18N
                                         }
 
                                         // remove the lines
@@ -371,25 +293,27 @@ public class LineOperations {
                             try {
                                 FilterProcess filterProcess = new FilterProcess(filterCommand.getInputText().split(" "));
 
-                                PrintWriter in = filterProcess.exec();
-                                for (int i = 0; i < linesText.length; i++) {
-                                    in.println(linesText[i]);
+                                try (PrintWriter in = filterProcess.exec()) {
+                                    for (String line : linesText) {
+                                        in.println(line);
+                                    }
                                 }
-                                in.close();
                                 if (filterProcess.waitFor() == 0) {
                                     InputOutput io = IOProvider.getDefault().getIO(filterCommand.getInputText(), true);
                                     linesText = filterProcess.getStdOutOutput();
                                     if (linesText != null) {
-                                        PrintWriter pw = new PrintWriter(io.getOut());
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            pw.println(linesText[i]);
+                                        try (PrintWriter pw = new PrintWriter(io.getOut())) {
+                                            for (String line : linesText) {
+                                                pw.println(line);
+                                            }
                                         }
                                     }
                                     linesText = filterProcess.getStdErrOutput();
                                     if (linesText != null) {
-                                        PrintWriter pw = new PrintWriter(io.getErr());
-                                        for (int i = 0; i < linesText.length; i++) {
-                                            pw.println(linesText[i]);
+                                        try (PrintWriter pw = new PrintWriter(io.getErr())) {
+                                            for (String line : linesText) {
+                                                pw.println(line);
+                                            }
                                         }
                                     }
                                 }
@@ -741,5 +665,126 @@ public class LineOperations {
 
     static void beep() {
         Toolkit.getDefaultToolkit().beep();
+    }
+
+    //~ inner classes
+    private static class SortLinesTask implements Runnable {
+
+        private final JTextComponent textComponent;
+        private final boolean descending;
+        private final boolean matchCase;
+
+        public SortLinesTask(JTextComponent textComponent, boolean descending, boolean matchCase) {
+            this.textComponent = textComponent;
+            this.descending = descending;
+            this.matchCase = matchCase;
+        }
+
+        @Override
+        public void run() {
+            OffsetRange zeroBaselineNumberRange = getZeroBaseLineNumberRange();
+            if (!canRun(zeroBaselineNumberRange)) {
+                // could not get line number or same line
+                beep();
+                return;
+            }
+            Document doc = textComponent.getDocument();
+            try {
+                String[] lines = getLines(doc, zeroBaselineNumberRange);
+                if (isRemoveDuplicateLines()) {
+                    lines = removeDuplicateLines(lines);
+                }
+                sortLines(lines, getComparator(descending, matchCase));
+                OffsetRange removalLineRange = getRemovalLineRange(doc, zeroBaselineNumberRange);
+                doc.remove(removalLineRange.getStart(), removalLineRange.getLength());
+                doc.insertString(removalLineRange.getStart(), joinLines(lines), null);
+            } catch (BadLocationException ex) {
+                ErrorManager.getDefault().notify(ex);
+            }
+        }
+
+        private OffsetRange getZeroBaseLineNumberRange() {
+            Document doc = textComponent.getDocument();
+            Caret caret = textComponent.getCaret();
+            Element rootElement = doc.getDefaultRootElement();
+
+            int selStart = caret.getDot();
+            int selEnd = caret.getMark();
+            int start = Math.min(selStart, selEnd);
+            int end = Math.max(selStart, selEnd) - 1;
+
+            int zeroBaseStartLineNumber = rootElement.getElementIndex(start);
+            int zeroBaseEndLineNumber = rootElement.getElementIndex(end);
+            return new OffsetRange(zeroBaseStartLineNumber, zeroBaseEndLineNumber);
+        }
+
+        private String[] getLines(Document doc, OffsetRange lineRange) throws BadLocationException {
+            int numberOfLines = lineRange.getLength() + 1;
+            int zeroBaseStartLineNumber = lineRange.getStart();
+            String[] lines = new String[numberOfLines];
+            for (int i = 0; i < numberOfLines; i++) {
+                // get line text
+                Element lineElement = doc.getDefaultRootElement().getElement(zeroBaseStartLineNumber + i);
+                int lineStartOffset = lineElement.getStartOffset();
+                int lineEndOffset = lineElement.getEndOffset();
+                lines[i] = doc.getText(lineStartOffset, (lineEndOffset - lineStartOffset));
+            }
+            return lines;
+        }
+
+        private String[] removeDuplicateLines(String[] lines) {
+            SortedSet<String> uniqifySet = new TreeSet<>(matchCase ? null : String.CASE_INSENSITIVE_ORDER);
+            uniqifySet.addAll(Arrays.asList(lines));
+            lines = uniqifySet.toArray(new String[0]);
+            return lines;
+        }
+
+        private void sortLines(String[] linesText, Comparator<String> comparator) {
+            if (comparator == null) {
+                Arrays.sort(linesText);
+            } else {
+                Arrays.sort(linesText, comparator);
+            }
+        }
+
+        private OffsetRange getRemovalLineRange(Document doc, OffsetRange lineNumberRange) {
+            Element rootElement = doc.getDefaultRootElement();
+            int startOffset = rootElement.getElement(lineNumberRange.getStart()).getStartOffset();
+            int endOffset = rootElement.getElement(lineNumberRange.getEnd()).getEndOffset();
+            endOffset = Math.min(doc.getLength(), endOffset);
+            return new OffsetRange(startOffset, endOffset);
+        }
+
+        private String joinLines(String[] lines) {
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                sb.append(line);
+            }
+            return sb.toString();
+        }
+
+        private static boolean canRun(OffsetRange zeroBaselineNumberRange) {
+            return zeroBaselineNumberRange.getStart() != -1
+                    && zeroBaselineNumberRange.getEnd() != -1
+                    && zeroBaselineNumberRange.getLength() != 0;
+        }
+
+        @CheckForNull
+        private static Comparator<String> getComparator(boolean descending, boolean matchCase) {
+            Comparator<String> comparator = null;
+            if (descending) {
+                if (matchCase) {
+                    comparator = REVERSE_STRING_COMPARATOR;
+                } else {
+                    comparator = REVERSE_STRING_COMPARATOR_CASE_INSENSITIVE;
+                }
+            } else {
+                if (matchCase) {
+                } else {
+                    comparator = String.CASE_INSENSITIVE_ORDER;
+                }
+            }
+            return comparator;
+        }
     }
 }
