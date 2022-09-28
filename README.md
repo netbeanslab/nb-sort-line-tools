@@ -1,7 +1,7 @@
 nb-sort-line-tools
 ==================
 
-NetBeans plugin which adds a toolbar with texteditor operations for sorting
+NetBeans plugin which adds a toolbar with texteditor operations for sorting.
 
 ![Screenshot](screenshots/screenshot.png)
 
@@ -15,7 +15,6 @@ You can also assign shortcuts to these actions.
 ## Downloads
 
 - https://github.com/netbeanslabo/nb-sort-line-tools/releases
-- http://plugins.netbeans.org/plugin/45925
 
 ## Further information
 
