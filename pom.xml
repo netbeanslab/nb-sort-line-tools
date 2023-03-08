@@ -4,7 +4,7 @@
     <groupId>com.junichi11.netbeans.modules</groupId>
     <artifactId>netbeans-sort-line-tools</artifactId>
     <!-- change the version of build.xml -->
-    <version>1.24</version>
+    <version>1.25.0</version>
     <packaging>nbm</packaging>
     <name>NetBeans Sort Line Tools</name>
     <url>https://github.com/netbeanslab/nb-sort-line-tools</url>
